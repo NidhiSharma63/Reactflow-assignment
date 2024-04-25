@@ -1,9 +1,41 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
+import { createBrowserRouter, Navigate, RouterProvider, useLocation } from "react-router-dom";
+import ReactWorkFlowComponent from "src/ReactFlow";
+import Register from "src/Register";
+import { KEY_FOR_STORING_TOKEN } from "src/utils/LocalStoragekey";
+import { getValueFromLS } from "./utils/LocalStorage";
+const RequiredAuth = (children) => {
+  const token = getValueFromLS(KEY_FOR_STORING_TOKEN);
+  let location = useLocation();
+
+  if (!token) {
+    return <Navigate to="/register" state={{ from: location }} replace />;
+  }
+  if (token) {
+    return children;
+  }
+};
+
+const router = createBrowserRouter([
+  {
+    path: "/register",
+    element: <Register />,
+  },
+
+  {
+    path: "/",
+    element: (
+      <RequiredAuth>
+        {" "}
+        <ReactWorkFlowComponent />
+      </RequiredAuth>
+    ),
+  },
+]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
