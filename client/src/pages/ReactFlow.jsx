@@ -1,8 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyNodeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
+import useCreateWorkflow from "src/hooks/useWorkflow";
+import { getValueFromLS } from "src/utils/LocalStorage";
+import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 
 const initialNodes = [
   { id: "1", position: { x: 0, y: 0 }, data: { label: "Start" } },
@@ -29,6 +32,15 @@ const ReactWorkFlowComponent = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const navigate = useNavigate();
   const [rfInstance, setRfInstance] = useState(null);
+  const { mutateAsync, error } = useCreateWorkflow();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      setIsLoading(false);
+    }
+  }, [error]);
+
   const onConnect = useCallback(
     (params) => {
       const { source, target } = params;
@@ -92,9 +104,12 @@ const ReactWorkFlowComponent = () => {
         return;
       }
 
-      console.log({ getAllSourceValues, extractedValues });
-      // localStorage.setItem("flow", JSON.stringify(flow));
-      // localStorage.setItem(flowKey, JSON.stringify(flow));
+      mutateAsync({
+        workFlowSequence: [...extractedValues, "End"],
+        userID: getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id,
+      }).then(() => {
+        setIsLoading(false);
+      });
     }
   }, [nodes, edges]);
 
@@ -127,7 +142,7 @@ const ReactWorkFlowComponent = () => {
       </div>
       <div className="save-workflow-container">
         <button className="workflow-button save-workflow-button" onClick={saveWorkFlow}>
-          Save WorkFlow
+          {isLoading ? "Please wait..." : "Save WorkFlow"}
         </button>
       </div>
     </>
