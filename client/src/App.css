@@ -109,3 +109,47 @@ input:focus {
   width: 200px;
   padding: 1rem 2rem;
 }
+
+/* workflow trigger component */
+
+.workflow-input {
+  height: 300px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropzone {
+  width: 80%;
+  height: 400px;
+  border: 1px solid rgba(0, 0, 0, 0.342);
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 5%;
+  box-shadow: 0px 0px 17px 1px rgb(91 70 70 / 17%);
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+.inner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+}
+.upload-icon {
+  font-size: 3rem;
+  color: rgba(0, 0, 0, 0.651);
+}
+
+.text-wrapper {
+  width: 70%;
+  line-height: 1.6rem;
+  text-align: center;
+}

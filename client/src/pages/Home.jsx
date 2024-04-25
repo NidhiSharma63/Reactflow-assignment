@@ -6,11 +6,17 @@ const Home = () => {
   const handleClickOnCreateWorkflow = useCallback(() => {
     navigate("/workflow");
   }, []);
+
+  const handleNavigateToTriggerWorkflow = useCallback(() => {
+    navigate("/trigger-workflow");
+  }, []);
   return (
     <div>
       <header className="header">
         <h1>WorkFlow</h1>
-        <button className="workflow-button">Trigger WorkFlow</button>
+        <button className="workflow-button" onClick={handleNavigateToTriggerWorkflow}>
+          Trigger WorkFlow
+        </button>
       </header>
       <div className="no-workflow">
         <p>

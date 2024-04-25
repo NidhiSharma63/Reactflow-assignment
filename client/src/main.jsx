@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from "src/pages/Home";
 import ReactWorkFlowComponent from "src/pages/ReactFlow";
 import Register from "src/pages/Register";
+import TriggerWorkFlow from "src/pages/TriggerWorkFlow";
 import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import "./App.css";
@@ -46,6 +47,15 @@ const router = createBrowserRouter([
       <RequiredAuth>
         {" "}
         <ReactWorkFlowComponent />
+      </RequiredAuth>
+    ),
+  },
+  {
+    path: "/trigger-workflow",
+    element: (
+      <RequiredAuth>
+        {" "}
+        <TriggerWorkFlow />
       </RequiredAuth>
     ),
   },
