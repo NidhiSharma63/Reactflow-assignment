@@ -13,7 +13,7 @@ const registerUser = async (req, res, next) => {
     }
 
     /**
-     * check if email is already present to not
+     * check if user is already present to not
      */
 
     const isAlreadyPresentUser = await User.find({ username });
@@ -31,9 +31,6 @@ const registerUser = async (req, res, next) => {
 
     // before saving the user create the toke
     await user.generateAuthToken();
-
-    // setting token as a cookie
-    // res.cookie("Todo", token, { httpOnly: true });
 
     // create user
     await user.save();
