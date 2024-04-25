@@ -2,10 +2,10 @@ import WorkFlow from "../schema/WorkFlowSchema.js";
 
 const createWorkFlow = async (req, res, next) => {
   try {
-    const { userID, workFlowSequence, workFlowId } = req.body;
-    if (!userID || !workFlowSequence) throw new Error("Missing Data");
+    const { userId, workFlowSequence, workFlowId } = req.body;
+    if (!userId || !workFlowSequence) throw new Error("Missing Data");
     const workFlow = new WorkFlow({
-      userId: userID,
+      userId,
       workFlowSequence,
       workFlowId,
     });
