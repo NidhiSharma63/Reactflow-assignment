@@ -13,7 +13,7 @@ import "./App.css";
 const queryClient = new QueryClient();
 const RequiredAuth = ({ children }) => {
   const token = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?.token;
-  console.log({ token });
+  // console.log({ token });
   let location = useLocation();
 
   if (!token) {

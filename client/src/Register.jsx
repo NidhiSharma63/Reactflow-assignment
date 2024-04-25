@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useRegisterQuery from "./hooks/useRegister";
 
 const Register = () => {
-  const { mutate } = useRegisterQuery();
+  const { mutateAsync, error } = useRegisterQuery();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({
     username: "",
     password: "",
@@ -21,9 +22,17 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ userInfo });
-    mutate(userInfo);
+    setIsLoading(true);
+    mutateAsync(userInfo).then(() => {
+      setIsLoading(false);
+    });
   };
+
+  useEffect(() => {
+    if (error) {
+      setIsLoading(false);
+    }
+  }, [error]);
 
   return (
     <div className="register-form-container">
@@ -48,7 +57,7 @@ const Register = () => {
           style={{ display: showPassword ? "none" : "block" }}
           onClick={togglePasswordVisibility}></i>
         <button className="form-button" onClick={handleSubmit}>
-          Register
+          {isLoading ? "Please wait..." : "Register"}
         </button>
       </form>
     </div>
