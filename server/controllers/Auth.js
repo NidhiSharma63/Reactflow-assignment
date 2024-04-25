@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import User from "../schema/UserSchema.js";
 
 // register user
 
@@ -24,7 +25,7 @@ const registerUser = async (req, res, next) => {
     const hashPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
-      email: email,
+      username,
       password: hashPassword,
     });
 
@@ -38,8 +39,11 @@ const registerUser = async (req, res, next) => {
     await user.save();
     res.status(200).json({ user });
   } catch (error) {
-    if (error.message.includes("email already exists.")) {
-      error.message = "Email already exists";
+    if (
+      error.message.includes("MongoServerError: E11000 duplicate key error") ||
+      error.message.includes("User already exists")
+    ) {
+      error.message = "User already exists";
     }
     next(error);
   }

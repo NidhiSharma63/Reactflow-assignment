@@ -30,5 +30,4 @@ userSchema.methods.generateAuthToken = async function () {
 
 // now we need to create collection
 const User = new mongoose.model("User", userSchema);
-
-module.exports = User;
+export default User;
