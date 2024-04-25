@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyNodeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
+import Header from "src/common/header";
 import useCreateWorkflow from "src/hooks/useWorkflow";
 import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
@@ -113,14 +114,9 @@ const ReactWorkFlowComponent = () => {
     }
   }, [nodes, edges]);
 
-  const handleClickOnLogo = useCallback(() => {
-    navigate("/");
-  }, []);
   return (
     <>
-      <header className="header workflow-header">
-        <h1 onClick={handleClickOnLogo}>WorkFlow</h1>
-      </header>
+      <Header />
       <div className="react-flow-container">
         <ReactFlow
           nodes={nodes}
