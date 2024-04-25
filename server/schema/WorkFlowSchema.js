@@ -9,6 +9,10 @@ const workFlowSchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  workFlowId: {
+    type: String,
+    required: true,
+  },
 });
 
 // now we need to create collection
