@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { Navigate, RouterProvider, createBrowserRouter, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Home from "src/pages/Home";
 import ReactWorkFlowComponent from "src/pages/ReactFlow";
 import Register from "src/pages/Register";
 import { getValueFromLS } from "src/utils/LocalStorage";
@@ -29,9 +30,18 @@ const router = createBrowserRouter([
     path: "/register",
     element: <Register />,
   },
-
   {
     path: "/",
+    element: (
+      <RequiredAuth>
+        {" "}
+        <Home />
+      </RequiredAuth>
+    ),
+  },
+
+  {
+    path: "/workflow",
     element: (
       <RequiredAuth>
         {" "}
