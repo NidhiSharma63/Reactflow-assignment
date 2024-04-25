@@ -110,6 +110,11 @@ input:focus {
   padding: 1rem 2rem;
 }
 
+.workflow-id {
+  padding-top: 0.5rem;
+  font-size: 1.3rem;
+  padding-left: 2rem;
+}
 /* workflow trigger component */
 
 .workflow-input {

@@ -7,7 +7,7 @@ import Header from "src/common/header";
 import { useCreateWorkflow } from "src/hooks/useWorkflow";
 import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
-
+import { v4 as uuidv4 } from "uuid";
 const initialNodes = [
   { id: "1", position: { x: 0, y: 0 }, data: { label: "Start" } },
   { id: "2", position: { x: 0, y: 80 }, data: { label: "Filter Data" } },
@@ -35,6 +35,7 @@ const ReactWorkFlowComponent = () => {
   const [rfInstance, setRfInstance] = useState(null);
   const { mutateAsync, error } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
+  const id = uuidv4();
 
   useEffect(() => {
     if (error) {
@@ -108,15 +109,17 @@ const ReactWorkFlowComponent = () => {
       mutateAsync({
         workFlowSequence: [...extractedValues, "End"],
         userID: getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id,
+        workFlowId: id,
       }).then(() => {
         setIsLoading(false);
       });
     }
-  }, [nodes, edges]);
+  }, [nodes, edges, id]);
 
   return (
     <>
       <Header />
+      <div className="workflow-id">Your workflow ID - {id}</div>
       <div className="react-flow-container">
         <ReactFlow
           nodes={nodes}
