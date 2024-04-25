@@ -2,15 +2,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Navigate, RouterProvider, createBrowserRouter, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ReactWorkFlowComponent from "src/ReactFlow";
 import Register from "src/Register";
-import { KEY_FOR_STORING_TOKEN } from "src/utils/LocalStoragekey";
+import { getValueFromLS } from "src/utils/LocalStorage";
+import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import "./App.css";
-import { getValueFromLS } from "./utils/LocalStorage";
 
 const queryClient = new QueryClient();
-const RequiredAuth = (children) => {
-  const token = getValueFromLS(KEY_FOR_STORING_TOKEN);
+const RequiredAuth = ({ children }) => {
+  const token = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?.token;
+  console.log({ token });
   let location = useLocation();
 
   if (!token) {
@@ -48,6 +51,7 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
+    <ToastContainer />
     <App />
   </React.StrictMode>
 );

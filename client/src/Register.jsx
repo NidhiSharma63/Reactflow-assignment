@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import useRegisterQuery from "./hooks/useRegister";
 
 const Register = () => {
-  const navigate = useNavigate();
   const { mutate } = useRegisterQuery();
   const [showPassword, setShowPassword] = useState(false);
   const [userInfo, setUserInfo] = useState({

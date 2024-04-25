@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getValueFromLS } from "src/utils/LocalStorage";
-import { KEY_FOR_STORING_TOKEN, KEY_FOR_STORING_USER_ID } from "src/utils/LocalStoragekey";
+import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import { BASE_URL } from "src/utils/constant";
 import { AxiosInstanceConfig } from "./AxiosInstanceConfig";
 // defining axios instance
@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 // AxiosResponseInterceptor(axiosInstance);
 
 async function axiosRequest({ ...options }) {
-  const AUTH_TOKEN = getValueFromLS(KEY_FOR_STORING_TOKEN);
+  const AUTH_TOKEN = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?.token;
   //   axiosInstance.defaults.headers.common.Authorization = AUTH_TOKEN;
 
   if (AUTH_TOKEN) {
@@ -28,7 +28,7 @@ async function axiosRequest({ ...options }) {
 }
 
 const customAxiosRequestForGet = async (url, params) => {
-  const userId = getValueFromLS(KEY_FOR_STORING_USER_ID);
+  const userId = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id;
   let paramsToPass = {};
   if (!userId) {
     throw new Error("User id is not present");
@@ -52,7 +52,7 @@ const customAxiosRequestForGet = async (url, params) => {
 };
 
 const customAxiosRequestForPost = async (url, method = "post", payload) => {
-  const userId = getValueFromLS(KEY_FOR_STORING_USER_ID);
+  const userId = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id;
 
   console.log({ url });
   let updatedPayload = { ...payload };

@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { customAxiosRequestForPost } from "src/utils/AxiosRequest";
-import { KEY_FOR_STORING_USER_ID } from "src/utils/LocalStoragekey.js";
+import { setValueToLs } from "src/utils/LocalStorage";
+import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 
 const useRegisterQuery = () => {
   const navigate = useNavigate();
@@ -11,10 +12,9 @@ const useRegisterQuery = () => {
     mutationFn: (payload) => {
       return customAxiosRequestForPost("/register", "post", payload);
     },
-    onSuccess: ({ token, user }) => {
+    onSuccess: (data) => {
       navigate("/"); // Navigate to the home page
-      setValueToLs(KEY_FOR_STORING_TOKEN, token);
-      setValueToLs(KEY_FOR_STORING_USER_ID, user.id);
+      setValueToLs(KEY_FOR_STORING_USER_DETAILS, JSON.stringify(data?.user));
       //   dispatch(userEmail(user.email));
     },
     onError: (error) => {

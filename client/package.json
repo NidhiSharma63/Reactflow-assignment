@@ -2,7 +2,6 @@
   "name": "my-react-flow-app",
   "private": true,
   "version": "0.0.0",
- 
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,6 +14,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.0",
+    "react-toastify": "^10.0.5",
     "reactflow": "^11.11.2"
   },
   "devDependencies": {
