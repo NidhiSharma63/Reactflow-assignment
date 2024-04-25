@@ -153,3 +153,10 @@ input:focus {
   line-height: 1.6rem;
   text-align: center;
 }
+
+.bottom-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  align-items: center;
+}

@@ -29,6 +29,17 @@ const TriggerWorkFlow = () => {
           <div className="text-wrapper">Select from Compouter OR Drag and Drop</div>
         </div>
       </div>
+      <div className="bottom-section">
+        <div>
+          <label for="cars">Select Workflow id:</label>
+          <select>
+            <option value="test">test</option>
+          </select>
+        </div>
+        <div>
+          <button className="workflow-button">Run Workflow</button>
+        </div>
+      </div>
     </div>
   );
 };
