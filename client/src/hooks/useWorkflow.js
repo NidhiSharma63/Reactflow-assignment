@@ -1,7 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { queryClient } from "src/main";
 import { customAxiosRequestForPost } from "src/utils/AxiosRequest";
+import { customAxiosRequestForGet } from "../utils/AxiosRequest";
 
 const useCreateWorkflow = () => {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ const useCreateWorkflow = () => {
     },
     onSuccess: (data) => {
       navigate("/");
+      queryClient.invalidateQueries({ queryKey: ["workflowsIds"] });
     },
     onError: (error) => {
       // console.log({ error }, error);
@@ -38,4 +41,8 @@ const useTriggerWorkFlow = () => {
   });
 };
 
-export { useCreateWorkflow, useTriggerWorkFlow };
+const useGetWorkflows = () => {
+  return useQuery({ queryKey: ["workflowsIds"], queryFn: () => customAxiosRequestForGet("/workflows") });
+};
+
+export { useCreateWorkflow, useGetWorkflows, useTriggerWorkFlow };

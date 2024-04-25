@@ -14,7 +14,7 @@ import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import "./App.css";
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 const RequiredAuth = ({ children }) => {
   const token = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?.token;
   // console.log({ token });
