@@ -205,3 +205,20 @@ input:focus {
   padding: 10px;
   align-items: center;
 }
+
+/* select workflow */
+select {
+  width: 200px;
+  padding: 0.3rem;
+  /* background-color: ; */
+}
+select:focus {
+  outline: none;
+}
+
+select option {
+  margin: 40px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}

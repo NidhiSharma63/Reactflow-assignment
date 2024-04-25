@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
  */
 
 const initialState = {
-  workFlowsIds: [],
+  work_flows_ids: [],
 };
 
 const appStateSlice = createSlice({
@@ -12,11 +12,12 @@ const appStateSlice = createSlice({
   initialState,
   reducers: {
     saveWorkFlowsIds: (state, action) => {
-      state.workFlowsIds = action.payload;
+      console.log(action.payload, "payload");
+      state.work_flows_ids = action.payload;
     },
   },
 });
 
-export const { userEmail } = appStateSlice.actions;
+export const { saveWorkFlowsIds } = appStateSlice.actions;
 export const appDataInStore = (state) => state.appState;
 export default appStateSlice.reducer;

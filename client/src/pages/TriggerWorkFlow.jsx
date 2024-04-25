@@ -1,14 +1,16 @@
 import React, { useCallback, useState } from "react";
 import Header from "src/common/header";
+import { useGetWorkflows } from "src/hooks/useWorkflow";
 
 import { useDropzone } from "react-dropzone";
 import { useTriggerWorkFlow } from "src/hooks/useWorkflow";
-import { getValueFromLS } from "src/utils/LocalStorage";
-import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 const TriggerWorkFlow = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [workflowId, setWorkflowId] = useState(null);
   const { mutate } = useTriggerWorkFlow();
+  const { data } = useGetWorkflows();
+
+  // const { work_flows_ids } = useSelector(appDataInStore);
 
   const onDrop = useCallback((acceptedFiles) => {
     setSelectedFile(acceptedFiles[0]);
@@ -24,7 +26,7 @@ const TriggerWorkFlow = () => {
   const RunWorkFlow = useCallback(() => {
     const formData = new FormData();
     formData.append("file", selectedFile);
-    mutate({ formData, userId: getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id, workflowId });
+    mutate({ formData, workflowId });
   }, []);
   return (
     <div>
@@ -43,7 +45,11 @@ const TriggerWorkFlow = () => {
         <div>
           <label htmlFor="ids">Select Workflow id:</label>
           <select onChange={(e) => setWorkflowId(e.target.value)}>
-            <option value="test">test</option>
+            {data?.map((workflow) => (
+              <option key={workflow} value={workflow}>
+                {workflow}
+              </option>
+            ))}
           </select>
         </div>
         <div>
