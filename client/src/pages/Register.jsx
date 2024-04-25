@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import useRegisterQuery from "./hooks/useRegister";
+import useRegisterQuery from "src/hooks/useRegister";
 
 const Register = () => {
   const { mutateAsync, error } = useRegisterQuery();
