@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyNodeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
 import Header from "src/common/header";
 import { useCreateWorkflow } from "src/hooks/useWorkflow";
-import { getValueFromLS } from "src/utils/LocalStorage";
-import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import { v4 as uuidv4 } from "uuid";
 const initialNodes = [
   { id: "1", position: { x: 0, y: 0 }, data: { label: "Start" } },
@@ -35,7 +33,7 @@ const ReactWorkFlowComponent = () => {
   const [rfInstance, setRfInstance] = useState(null);
   const { mutateAsync, error } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
-  const id = uuidv4();
+  const id = useMemo(() => uuidv4(), []);
 
   useEffect(() => {
     if (error) {
@@ -108,7 +106,6 @@ const ReactWorkFlowComponent = () => {
 
       mutateAsync({
         workFlowSequence: [...extractedValues, "End"],
-        userID: getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id,
         workFlowId: id,
       }).then(() => {
         setIsLoading(false);

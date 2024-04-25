@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 import { Navigate, RouterProvider, createBrowserRouter, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,6 +9,7 @@ import Home from "src/pages/Home";
 import ReactWorkFlowComponent from "src/pages/ReactFlow";
 import Register from "src/pages/Register";
 import TriggerWorkFlow from "src/pages/TriggerWorkFlow";
+import store from "src/store";
 import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import "./App.css";
@@ -64,7 +66,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />;
+      <Provider store={store}>
+        <RouterProvider router={router} />;
+      </Provider>
     </QueryClientProvider>
   );
 }
