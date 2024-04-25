@@ -1,14 +1,15 @@
 import React, { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyNodeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
 
 const initialNodes = [
   { id: "1", position: { x: 0, y: 0 }, data: { label: "Start" } },
-  { id: "2", position: { x: 0, y: 50 }, data: { label: "Filter Data" } },
-  { id: "3", position: { x: 0, y: 100 }, data: { label: "Wait" } },
-  { id: "4", position: { x: 0, y: 150 }, data: { label: "Convert Format" } },
-  { id: "5", position: { x: 0, y: 200 }, data: { label: "Send Post Request" } },
-  { id: "6", position: { x: 0, y: 250 }, data: { label: "End" } },
+  { id: "2", position: { x: 0, y: 80 }, data: { label: "Filter Data" } },
+  { id: "3", position: { x: 0, y: 150 }, data: { label: "Wait" } },
+  { id: "4", position: { x: 0, y: 230 }, data: { label: "Convert Format" } },
+  { id: "5", position: { x: 0, y: 300 }, data: { label: "Send Post Request" } },
+  { id: "6", position: { x: 0, y: 380 }, data: { label: "End" } },
 ];
 
 // initialEdges is an array that defines the connections between the nodes in the flow diagram
@@ -33,21 +34,24 @@ const ReactWorkFlowComponent = () => {
 
       // Check for self connections.
       if (source === target) {
-        console.log("Cannot connect node to itself.");
+        // console.log("Cannot connect node to itself.");
+        toast.error("Cannot connect node to itself.");
         return;
       }
 
       // Check for existing connections from the source node.
       const sourceHasConnection = edges.some((edge) => edge.source === source);
       if (sourceHasConnection) {
-        console.log("This node already has an outgoing connection.");
+        // console.log("This node already has an outgoing connection.");
+        toast.error("This node already has an outgoing connection.");
         return;
       }
 
       // Check for existing connections to the target node.
       const targetHasConnection = edges.some((edge) => edge.target === target);
       if (targetHasConnection) {
-        console.log("This node already has an incoming connection.");
+        // console.log("This node already has an incoming connection.");
+        toast.error("This node already has an incoming connection.");
         return;
       }
 
@@ -65,19 +69,37 @@ const ReactWorkFlowComponent = () => {
   );
 
   const saveWorkFlow = useCallback(() => {
-    // console.log("Nodes:", nodes);
-    // console.log("Edges:", edges);
-
     if (rfInstance) {
       const flow = rfInstance.toObject();
-      console.log({ flow });
+
+      if (flow.edges.length < flow.nodes.length - 1) {
+        toast.error("Please add All nodes in the flow");
+        return;
+      }
+
+      const getAllSourceValues = flow.edges.map((edge) => +edge.source);
+      const extractedValues = getAllSourceValues.map((index) => flow.nodes[index - 1].data.label);
+
+      console.log({ extractedValues });
+      if (extractedValues[0] !== "Start") {
+        toast.error("First node must be Start");
+        return;
+      }
+
+      if (extractedValues.includes("End")) {
+        toast.error("Last node must be End");
+        return;
+      }
+
+      console.log({ getAllSourceValues, extractedValues });
+      // localStorage.setItem("flow", JSON.stringify(flow));
       // localStorage.setItem(flowKey, JSON.stringify(flow));
     }
   }, [nodes, edges]);
 
   return (
     <>
-      <div style={{ width: "500px", height: "500px", border: "1px solid red", overflow: "hidden" }}>
+      <div style={{ width: "100vw", height: "500px", border: "1px solid red" }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -96,7 +118,11 @@ const ReactWorkFlowComponent = () => {
           <Controls />
         </ReactFlow>
       </div>
-      <button onClick={saveWorkFlow}>Save WorkFlow</button>
+      <div className="save-workflow-container">
+        <button className="workflow-button save-workflow-button" onClick={saveWorkFlow}>
+          Save WorkFlow
+        </button>
+      </div>
     </>
   );
 };

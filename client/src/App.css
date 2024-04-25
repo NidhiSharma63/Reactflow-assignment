@@ -85,3 +85,18 @@ input:focus {
   text-align: center;
   line-height: 2rem;
 }
+
+.save-workflow-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  margin: auto;
+  gap: 1rem;
+}
+
+.save-workflow-button {
+  width: 200px;
+  padding: 1rem 2rem;
+}

@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const handleClickOnCreateWorkflow = useCallback(() => {
+    navigate("/workflow");
+  }, []);
   return (
     <div>
       <header className="header">
@@ -13,7 +18,9 @@ const Home = () => {
           <br />
           To Trigger workflow please create first.
         </p>
-        <button className="workflow-button">Create WorkFlow</button>
+        <button className="workflow-button" onClick={handleClickOnCreateWorkflow}>
+          Create WorkFlow
+        </button>
       </div>
     </div>
   );
