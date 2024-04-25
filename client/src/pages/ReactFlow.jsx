@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyNodeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
@@ -26,7 +27,7 @@ const initialEdges = [
 const ReactWorkFlowComponent = () => {
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
+  const navigate = useNavigate();
   const [rfInstance, setRfInstance] = useState(null);
   const onConnect = useCallback(
     (params) => {
@@ -80,7 +81,7 @@ const ReactWorkFlowComponent = () => {
       const getAllSourceValues = flow.edges.map((edge) => +edge.source);
       const extractedValues = getAllSourceValues.map((index) => flow.nodes[index - 1].data.label);
 
-      console.log({ extractedValues });
+      // console.log({ extractedValues });
       if (extractedValues[0] !== "Start") {
         toast.error("First node must be Start");
         return;
@@ -97,9 +98,15 @@ const ReactWorkFlowComponent = () => {
     }
   }, [nodes, edges]);
 
+  const handleClickOnLogo = useCallback(() => {
+    navigate("/");
+  }, []);
   return (
     <>
-      <div style={{ width: "100vw", height: "500px", border: "1px solid red" }}>
+      <header className="header workflow-header">
+        <h1 onClick={handleClickOnLogo}>WorkFlow</h1>
+      </header>
+      <div className="react-flow-container">
         <ReactFlow
           nodes={nodes}
           edges={edges}
