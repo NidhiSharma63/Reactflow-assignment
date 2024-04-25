@@ -2,10 +2,9 @@ import axios from "axios";
 import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import { BASE_URL } from "src/utils/constant";
-import { AxiosInstanceConfig } from "./AxiosInstanceConfig";
 // defining axios instance
 const axiosInstance = axios.create({
-  ...AxiosInstanceConfig,
+  // ...AxiosInstanceConfig,
   baseURL: BASE_URL,
 });
 
@@ -44,6 +43,9 @@ const customAxiosRequestForGet = async (url, params) => {
       url,
       method: "get",
       params: paramsToPass,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     return response;
   } catch (error) {
@@ -51,10 +53,10 @@ const customAxiosRequestForGet = async (url, params) => {
   }
 };
 
-const customAxiosRequestForPost = async (url, method = "post", payload) => {
+const customAxiosRequestForPost = async (url, method = "post", payload, fileUpload) => {
   const userId = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id;
 
-  console.log({ url });
+  // console.log({ url });
   let updatedPayload = { ...payload };
   if (userId) {
     updatedPayload = { ...payload, userId };
@@ -65,6 +67,9 @@ const customAxiosRequestForPost = async (url, method = "post", payload) => {
       url,
       method,
       data: updatedPayload,
+      headers: {
+        "Content-Type": fileUpload ? "multipart/form-data" : "application/json",
+      },
     });
     return response;
   } catch (error) {

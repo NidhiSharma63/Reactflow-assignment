@@ -22,4 +22,20 @@ const useCreateWorkflow = () => {
   });
 };
 
-export default useCreateWorkflow;
+const useTriggerWorkFlow = () => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: (payload) => {
+      return customAxiosRequestForPost("/trigger-workflow", "post", payload, true);
+    },
+    onSuccess: (data) => {
+      navigate("/");
+    },
+    onError: (error) => {
+      // console.log({ error }, error);
+      toast.error(error?.response?.data?.toString());
+    },
+  });
+};
+
+export { useCreateWorkflow, useTriggerWorkFlow };
