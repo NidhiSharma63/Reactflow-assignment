@@ -15,17 +15,6 @@ const initialNodes = [
   { id: "6", position: { x: 0, y: 380 }, data: { label: "End" } },
 ];
 
-// initialEdges is an array that defines the connections between the nodes in the flow diagram
-// id: A unique identifier for the edge. This should be different for each edge.
-// source: The id of the node where the edge starts.
-// target: The id of the node where the edge ends.
-const initialEdges = [
-  { id: "e1-2", source: "1", target: "2" },
-  { id: "e2-3", source: "2", target: "3" },
-  { id: "e3-4", source: "3", target: "4" },
-  { id: "e3-5", source: "4", target: "5" },
-  { id: "e3-6", source: "5", target: "6" },
-];
 const ReactWorkFlowComponent = () => {
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -104,6 +93,7 @@ const ReactWorkFlowComponent = () => {
         return;
       }
 
+      setIsLoading(true);
       mutateAsync({
         workFlowSequence: [...extractedValues, "End"],
         workFlowId: id,

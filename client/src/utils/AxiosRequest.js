@@ -57,8 +57,11 @@ const customAxiosRequestForPost = async (url, method = "post", payload, fileUplo
 
   // console.log(payload);
   // Add userId to formData if it exists
-  if (userId) {
+
+  if (payload instanceof FormData) {
     payload.append("userId", userId);
+  } else {
+    payload = { ...payload, userId };
   }
 
   try {
