@@ -37,13 +37,13 @@ const triggerWorkFlow = async (req, res, next) => {
         case "Filter Data":
           statusUpdates.status = "InProgress";
           statusUpdates.step = "Filter Data";
-          data = await filterData(file.buffer);
+          data = await filterData(data);
           break;
 
         case "Wait":
           statusUpdates.status = "InProgress";
           statusUpdates.step = "Wait";
-          await wait(60000);
+          await wait(5000);
 
           break;
 
@@ -56,6 +56,7 @@ const triggerWorkFlow = async (req, res, next) => {
         case "Send Post Request":
           statusUpdates.status = "InProgress";
           statusUpdates.step = "Send Post Request";
+          // console.log({ data });
           await sendPostRequest(data);
           break;
 

@@ -6,14 +6,24 @@ const parseCsv = (buffer) => {
     const csvString = buffer.toString("utf8");
     Papa.parse(csvString, {
       header: true,
-      complete: (results) => resolve(results.data),
+      complete: (results) => {
+        console.log(results.data, "parsed data");
+        return resolve(results.data);
+      },
       error: (error) => reject(error),
     });
   });
 };
 
 const filterData = (data) => {
-  return data.map((row) => Object.fromEntries(Object.entries(row).map(([key, value]) => [key, value.toLowerCase()])));
+  return data.map((item) => {
+    return Object.fromEntries(
+      Object.entries(item).map(([key, value]) => {
+        // Check if the value is a string and convert it to lowercase
+        return [key, typeof value === "string" ? value.toLowerCase() : value];
+      })
+    );
+  });
 };
 
 const wait = (ms) => {
@@ -21,7 +31,13 @@ const wait = (ms) => {
 };
 
 const convertToJson = (data) => {
-  return JSON.stringify(data);
+  try {
+    const jsonString = JSON.stringify(data); // Log to verify JSON string
+    return jsonString;
+  } catch (error) {
+    console.error("Error converting data to JSON:", error);
+    throw error; // Propagate error
+  }
 };
 
 const sendPostRequest = async (buffer) => {
