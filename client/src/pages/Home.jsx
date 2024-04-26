@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetWorkflows } from "src/hooks/useWorkflow";
 import { saveWorkFlowsIds } from "src/redux/AppStateSlice";
 const Home = () => {
-  const { data } = useGetWorkflows();
+  const { data, isPending } = useGetWorkflows();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleClickOnCreateWorkflow = useCallback(() => {
@@ -39,19 +39,7 @@ const Home = () => {
         </div>
       )}
 
-      {data?.length > 0 ? (
-        <div className="workflow-container">
-          {data?.map((workflow) => {
-            return (
-              <>
-                <div className="workflow" key={workflow}>
-                  <p>{workflow}</p>
-                </div>
-              </>
-            );
-          })}
-        </div>
-      ) : (
+      {data?.length === 0 && !isPending ? (
         <>
           <div className="no-workflow">
             <p>
@@ -63,6 +51,21 @@ const Home = () => {
           <button className="workflow-button" onClick={handleClickOnCreateWorkflow}>
             Create WorkFlow
           </button>
+        </>
+      ) : (
+        <>
+          <div className="workflow-container">
+            {isPending && <p>Loading...</p>}
+            {data?.map((workflow) => {
+              return (
+                <>
+                  <div className="workflow" key={workflow}>
+                    <p>{workflow}</p>
+                  </div>
+                </>
+              );
+            })}
+          </div>
         </>
       )}
     </div>
