@@ -1,5 +1,13 @@
 import WorkFlow from "../schema/WorkFlowSchema.js";
 import { convertToJson, filterData, parseCsv, sendPostRequest, wait } from "../utils/WorkFlowFunction.js";
+
+// Helper function to send progress updates
+
+const statusUpdates = {
+  status: "InProgress",
+  step: "Start",
+};
+
 const triggerWorkFlow = async (req, res, next) => {
   try {
     const { file } = req;
@@ -18,48 +26,71 @@ const triggerWorkFlow = async (req, res, next) => {
     const sequence = workflow.workFlowSequence;
     let data;
 
-    // Process the sequence
     for (const step of sequence) {
       switch (step) {
         case "Start":
-          // Begin processing
-          console.log("Workflow started");
+          statusUpdates.status = "InProgress";
+          statusUpdates.step = "Start";
           data = await parseCsv(file.buffer);
           break;
 
         case "Filter Data":
-          // Convert the CSV string and filter data
+          statusUpdates.status = "InProgress";
+          statusUpdates.step = "Filter Data";
           data = await filterData(file.buffer);
           break;
 
         case "Wait":
-          await wait(60000); // Wait for 5 seconds or as needed
+          statusUpdates.status = "InProgress";
+          statusUpdates.step = "Wait";
+          await wait(60000);
+
           break;
 
         case "Convert Format":
+          statusUpdates.status = "InProgress";
+          statusUpdates.step = "Convert Format";
           data = convertToJson(data);
           break;
 
         case "Send Post Request":
-          // Send data to a predefined URL
+          statusUpdates.status = "InProgress";
+          statusUpdates.step = "Send Post Request";
           await sendPostRequest(data);
           break;
 
         case "End":
-          // End processing
+          statusUpdates.status = "InProgress";
+          statusUpdates.step = "End";
           break;
 
         default:
           // Handle unknown steps
           console.log(`Unknown step: ${step}`);
+          throw new Error(`Unknown step: ${step}`);
       }
     }
 
-    res.json({ message: "Workflow executed successfully" });
+    statusUpdates.status = "InProgress";
+    statusUpdates.step = "Start";
+    res.status(200).send("Done");
+
+    // res.end();
+    // res.end();
   } catch (error) {
-    console.error(error);
-    res.status(500).send(error.message);
+    console.log(error);
+    next(error);
   }
 };
 
-export default triggerWorkFlow;
+const getStatusUpdates = async (req, res, next) => {
+  try {
+    // console.log({ statusUpdates });
+    res.send(statusUpdates);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export { getStatusUpdates, triggerWorkFlow };
