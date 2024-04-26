@@ -32,4 +32,4 @@ This React Workflow Project combines a React frontend with a Node.js and Express
 3. **Workflow Creation**: Create and manage workflows from the home page.
 4. **Workflow Triggering**: Trigger workflows as required.
 
-## The wait is set to 3s instead of 60s because vercel free tier doesn't allow long requests
+## The wait is set to 1s instead of 60s because vercel free tier doesn't allow long requests
