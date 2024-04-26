@@ -1,21 +1,12 @@
-import React, { useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetWorkflows } from "src/hooks/useWorkflow";
-import { saveWorkFlowsIds } from "src/redux/AppStateSlice";
 const Home = () => {
   const { data, isPending } = useGetWorkflows();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleClickOnCreateWorkflow = useCallback(() => {
     navigate("/workflow");
   }, []);
-
-  useEffect(() => {
-    if (data?.length > 0) {
-      dispatch(saveWorkFlowsIds(data));
-    }
-  }, [data]);
 
   const handleNavigateToTriggerWorkflow = useCallback(() => {
     navigate("/trigger-workflow");
