@@ -38,10 +38,10 @@ const Home = () => {
               <br />
               To Trigger workflow please create first.
             </p>
+            <button className="workflow-button" onClick={handleClickOnCreateWorkflow}>
+              Create WorkFlow
+            </button>
           </div>
-          <button className="workflow-button" onClick={handleClickOnCreateWorkflow}>
-            Create WorkFlow
-          </button>
         </>
       ) : (
         <>
