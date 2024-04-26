@@ -48,15 +48,15 @@ const TriggerWorkFlow = () => {
         <>
           {
             <div>
-              <div class="center">
-                <div class="loader"></div>
+              <div className="center">
+                <div className="loader"></div>
                 <h1>Step {workflowStatus?.step} is in progress</h1>
               </div>
             </div>
           }
         </>
       ) : isWorkedFlowTriggerred ? (
-        <div class="center">
+        <div className="center">
           <h1>WorkFlow Triggered</h1>
         </div>
       ) : (
