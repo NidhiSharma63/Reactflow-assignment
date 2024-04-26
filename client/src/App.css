@@ -103,6 +103,7 @@ input:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 .workflow {
   display: flex;

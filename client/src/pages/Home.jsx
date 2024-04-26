@@ -34,7 +34,7 @@ const Home = () => {
         <div className="workflow-middle">
           <p className="workflow-title">you have following workflows</p>
           <button className="workflow-button" onClick={handleClickOnCreateWorkflow}>
-            Create WorkFlow
+            Create New WorkFlow
           </button>
         </div>
       )}
@@ -55,7 +55,7 @@ const Home = () => {
       ) : (
         <>
           <div className="workflow-container">
-            {isPending && <p>Loading...</p>}
+            {isPending && <div style={{ textAlign: "center", width: "100%" }}>Loading...</div>}
             {data?.map((workflow) => {
               return (
                 <>

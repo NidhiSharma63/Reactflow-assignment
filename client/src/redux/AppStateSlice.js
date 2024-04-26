@@ -12,7 +12,7 @@ const appStateSlice = createSlice({
   initialState,
   reducers: {
     saveWorkFlowsIds: (state, action) => {
-      console.log(action.payload, "payload");
+      // console.log(action.payload, "payload");
       state.work_flows_ids = action.payload;
     },
   },
