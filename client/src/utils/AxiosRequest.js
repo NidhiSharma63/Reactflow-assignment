@@ -52,28 +52,29 @@ const customAxiosRequestForGet = async (url, params) => {
     throw error; // Re-throw the error to propagate it to the caller
   }
 };
-
 const customAxiosRequestForPost = async (url, method = "post", payload, fileUpload) => {
   const userId = getValueFromLS(KEY_FOR_STORING_USER_DETAILS)?._id;
 
-  // console.log({ url });
-  let updatedPayload = { ...payload };
+  // console.log(payload);
+  // Add userId to formData if it exists
   if (userId) {
-    updatedPayload = { ...payload, userId };
+    payload.append("userId", userId);
   }
 
   try {
+    // If fileUpload is true, let axios handle the Content-Type header automatically
+    const headers = fileUpload ? {} : { "Content-Type": "application/json" };
+
     const response = await axiosRequest({
       url,
       method,
-      data: updatedPayload,
-      headers: {
-        "Content-Type": fileUpload ? "multipart/form-data" : "application/json",
-      },
+      data: payload,
+      // headers: payload.getHeaders(),
     });
     return response;
   } catch (error) {
-    throw error; // Re-throw the error to propagate it to the caller
+    console.log(error);
+    throw error;
   }
 };
 

@@ -29,6 +29,7 @@ const useTriggerWorkFlow = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (payload) => {
+      console.log("first");
       return customAxiosRequestForPost("/trigger-workflow", "post", payload, true);
     },
     onSuccess: (data) => {
