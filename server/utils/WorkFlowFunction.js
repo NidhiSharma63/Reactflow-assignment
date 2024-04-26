@@ -16,6 +16,12 @@ const parseCsv = (buffer) => {
 };
 
 const filterData = (data) => {
+  // console.log({ data }, JSON.parse(data), typeof data);
+
+  /** if type of data is string then parse it to json */
+  if (typeof data === "string") {
+    data = JSON.parse(data);
+  }
   return data.map((item) => {
     return Object.fromEntries(
       Object.entries(item).map(([key, value]) => {
