@@ -33,15 +33,10 @@ const triggerWorkFlow = async (req, res, next) => {
           break;
 
         case "Wait":
-          // Introduce a delay
-          await wait(5000); // Wait for 5 seconds or as needed
+          await wait(60000); // Wait for 5 seconds or as needed
           break;
 
         case "Convert Format":
-          // Convert data to JSON
-          if (!data) {
-            throw new Error("No data to convert");
-          }
           data = convertToJson(data);
           break;
 
@@ -52,7 +47,6 @@ const triggerWorkFlow = async (req, res, next) => {
 
         case "End":
           // End processing
-          console.log("Workflow ended");
           break;
 
         default:
