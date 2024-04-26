@@ -46,21 +46,21 @@ const convertToJson = (data) => {
   }
 };
 
-const sendPostRequest = async (buffer) => {
+const sendPostRequest = async (data) => {
   // Assuming 'buffer' is the buffer of your file
-  const fileContent = buffer.toString("utf8"); // Convert buffer to string
+  // const fileContent = buffer.toString("utf8"); // Convert buffer to string
 
   // Create a JSON payload with the file content
   const payload = {
-    fileContent: fileContent,
+    fileContent: data,
   };
 
   try {
-    console.log("Sending request with file content...");
+    // console.log("Sending request with file content...");
     const response = await axios.post("https://nidhi.requestcatcher.com/test", payload, {
       headers: { "Content-Type": "application/json" },
     });
-    console.log("Response:", response.data);
+    // console.log("Response:", response.data);
 
     return response.data;
   } catch (error) {
