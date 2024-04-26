@@ -35,3 +35,5 @@ This React Workflow Project combines a React frontend with a Node.js and Express
 4. **Workflow Triggering**: Trigger workflows as required.
 
 ## The wait is set to 1s instead of 60s because vercel free tier doesn't allow long requests
+
+## I only know e2e testing using playwright or cypress so i didn't write the test but i'm learning about writing test for component using react-testing-library
