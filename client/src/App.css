@@ -251,3 +251,17 @@ select option {
   align-items: center;
   height: 100vh;
 }
+
+/*  */
+
+.custom-node {
+  border: 1px solid black;
+  position: relative;
+  top: 2px;
+  width: 150px;
+  text-align: center;
+  border-radius: 2px;
+  padding: 10px 0px;
+  font-size: 13px;
+  background-color: white;
+}

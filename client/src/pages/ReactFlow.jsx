@@ -6,15 +6,20 @@ import "reactflow/dist/style.css";
 import Header from "src/common/header";
 import { useCreateWorkflow } from "src/hooks/useWorkflow";
 import { v4 as uuidv4 } from "uuid";
+import { EndNode, StartNode } from "../component/CustomNode";
 const initialNodes = [
-  { id: "1", position: { x: 0, y: 0 }, data: { label: "Start" } },
+  { id: "1", position: { x: 0, y: 0 }, data: { label: "Start" }, type: "startNode" },
   { id: "2", position: { x: 0, y: 80 }, data: { label: "Filter Data" } },
   { id: "3", position: { x: 0, y: 150 }, data: { label: "Wait" } },
   { id: "4", position: { x: 0, y: 230 }, data: { label: "Convert Format" } },
   { id: "5", position: { x: 0, y: 300 }, data: { label: "Send Post Request" } },
-  { id: "6", position: { x: 0, y: 380 }, data: { label: "End" } },
+  { id: "6", position: { x: 0, y: 380 }, data: { label: "End" }, type: "endNode" },
 ];
 
+const nodeTypes = {
+  startNode: StartNode,
+  endNode: EndNode,
+};
 const ReactWorkFlowComponent = () => {
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -121,6 +126,7 @@ const ReactWorkFlowComponent = () => {
           onInit={setRfInstance}
           edgesUpdatable={true}
           nodesDraggable={true}
+          nodeTypes={nodeTypes}
           // onNodeDrag={onNodeDrag}
         >
           <Controls />
