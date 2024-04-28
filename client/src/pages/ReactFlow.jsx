@@ -1,174 +1,84 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import ReactFlow, { Controls, addEdge, applyNodeChanges, useEdgesState, useNodesState } from "reactflow";
+import React, { useCallback, useRef, useState } from "react";
+import ReactFlow, { Controls, ReactFlowProvider, addEdge, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
-import Header from "src/common/header";
-import { useCreateWorkflow } from "src/hooks/useWorkflow";
-import { v4 as uuidv4 } from "uuid";
-import { EndNode, StartNode } from "../component/CustomNode";
+
+import Sidebar from "../component/Sidebar";
+
+// import "./index.css";
+
 const initialNodes = [
-  { id: "1", position: { x: 0, y: 0 }, data: { label: "Start" }, type: "startNode" },
-  { id: "2", position: { x: 0, y: 80 }, data: { label: "Filter Data" } },
-  { id: "3", position: { x: 0, y: 150 }, data: { label: "Wait" } },
-  { id: "4", position: { x: 0, y: 230 }, data: { label: "Convert Format" } },
-  { id: "5", position: { x: 0, y: 300 }, data: { label: "Send Post Request" } },
-  { id: "6", position: { x: 0, y: 380 }, data: { label: "End" }, type: "endNode" },
+  {
+    id: "1",
+    type: "input",
+    data: { label: "input node" },
+    position: { x: 250, y: 5 },
+  },
 ];
 
-const nodeTypes = {
-  startNode: StartNode,
-  endNode: EndNode,
-};
-const ReactWorkFlowComponent = () => {
-  const [nodes, setNodes] = useNodesState(initialNodes);
+let id = 0;
+const getId = () => `dndnode_${id++}`;
+
+const DnDFlow = () => {
+  const reactFlowWrapper = useRef(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const navigate = useNavigate();
-  const [rfInstance, setRfInstance] = useState(null);
-  const { mutateAsync, error } = useCreateWorkflow();
-  const [isLoading, setIsLoading] = useState(false);
-  const id = useMemo(() => uuidv4(), []);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
-  useEffect(() => {
-    if (error) {
-      setIsLoading(false);
-    }
-  }, [error]);
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
-  const onConnect = useCallback(
-    (params) => {
-      const { source, target } = params;
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }, []);
 
-      // Check for self connections.
-      if (source === target) {
-        // console.log("Cannot connect node to itself.");
-        toast.error("Cannot connect node to itself.");
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const type = event.dataTransfer.getData("application/reactflow");
+
+      // check if the dropped element is valid
+      if (typeof type === "undefined" || !type) {
         return;
       }
 
-      // Check for existing connections from the source node.
-      const sourceHasConnection = edges.some((edge) => edge.source === source);
-      if (sourceHasConnection) {
-        // console.log("This node already has an outgoing connection.");
-        toast.error("This node already has an outgoing connection.");
-        return;
-      }
-
-      // Check for existing connections to the target node.
-      const targetHasConnection = edges.some((edge) => edge.target === target);
-      if (targetHasConnection) {
-        // console.log("This node already has an incoming connection.");
-        toast.error("This node already has an incoming connection.");
-        return;
-      }
-
-      // If all checks pass, add the new edge.
-      setEdges((eds) => addEdge(params, eds));
-    },
-    [edges, setEdges]
-  );
-
-  const onNodesChange = useCallback(
-    (changes) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
-    },
-    [setNodes, nodes]
-  );
-
-  const saveWorkFlow = useCallback(() => {
-    if (rfInstance) {
-      const flow = rfInstance.toObject();
-
-      if (flow.edges.length < flow.nodes.length - 1) {
-        toast.error("Please add All nodes in the flow");
-        return;
-      }
-
-      const getAllSourceValues = flow.edges.map((edge) => +edge.source);
-      const extractedValues = getAllSourceValues.map((index) => flow.nodes[index - 1].data.label);
-
-      // console.log({ extractedValues });
-      if (extractedValues[0] !== "Start") {
-        toast.error("First node must be Start");
-        return;
-      }
-
-      if (extractedValues.includes("End")) {
-        toast.error("Last node must be End");
-        return;
-      }
-
-      setIsLoading(true);
-      mutateAsync({
-        workFlowSequence: [...extractedValues, "End"],
-        workFlowId: id,
-      }).then(() => {
-        setIsLoading(false);
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
       });
-    }
-  }, [nodes, edges, id]);
+      const newNode = {
+        id: getId(),
+        type,
+        position,
+        data: { label: `${type} node` },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [reactFlowInstance]
+  );
 
   return (
-    <>
-      <Header />
-      <div className="workflow-id">Your workflow ID - {id}</div>
-      <div className="react-flow-container">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          fitView
-          fitViewOptions={{ padding: 0.1 }}
-          minZoom={1}
-          maxZoom={1}
-          onInit={setRfInstance}
-          edgesUpdatable={true}
-          nodesDraggable={true}
-          nodeTypes={nodeTypes}
-          // onNodeDrag={onNodeDrag}
-        >
-          <Controls />
-        </ReactFlow>
-      </div>
-      <div className="save-workflow-container">
-        <button className="workflow-button save-workflow-button" onClick={saveWorkFlow}>
-          {isLoading ? "Please wait..." : "Save WorkFlow"}
-        </button>
-      </div>
-    </>
+    <div className="dndflow">
+      <ReactFlowProvider>
+        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onInit={setReactFlowInstance}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            fitView>
+            <Controls />
+          </ReactFlow>
+        </div>
+        <Sidebar />
+      </ReactFlowProvider>
+    </div>
   );
 };
 
-export default ReactWorkFlowComponent;
-
-/** needs to refactor it */
-//   const onNodeDrag = useCallback(
-//     (event, node) => {
-//       setNodes((nds) =>
-//         nds.map((n) => {
-//           if (n.id === node.id) {
-//             // Maan lijiye ki aapke node ka size 100x50 pixels hai
-//             const nodeWidth = 100;
-//             const nodeHeight = 50;
-
-//             // Aapke parent container ke dimensions
-//             const maxWidth = 300 - nodeWidth;
-//             const maxHeight = 300 - nodeHeight;
-
-//             // Calculate new x and y within the boundaries
-//             let newX = Math.min(Math.max(node.position.x, 0), maxWidth);
-//             let newY = Math.min(Math.max(node.position.y, 0), maxHeight);
-
-//             return {
-//               ...n,
-//               position: { x: newX, y: newY },
-//             };
-//           }
-//           return n;
-//         })
-//       );
-//     },
-//     [setNodes]
-//   );
+export default DnDFlow;

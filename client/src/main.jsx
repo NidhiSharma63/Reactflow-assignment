@@ -46,7 +46,9 @@ const router = createBrowserRouter([
     element: (
       <RequiredAuth>
         {" "}
+        {/* <ReactFlowProvider> */}
         <ReactWorkFlowComponent />
+        {/* </ReactFlowProvider> */}
       </RequiredAuth>
     ),
   },
@@ -64,7 +66,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }
