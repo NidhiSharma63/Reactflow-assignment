@@ -7,9 +7,10 @@ const Header = () => {
     navigate("/");
   }, []);
   return (
-    <header className="header workflow-header">
+    <aside className="header workflow-header">
       <h1 onClick={handleClickOnLogo}>WorkFlow</h1>
-    </header>
+      <button className="button">Trigger WorkFlow</button>
+    </aside>
   );
 };
 
