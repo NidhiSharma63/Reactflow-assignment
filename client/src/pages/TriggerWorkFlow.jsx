@@ -48,7 +48,7 @@ const TriggerWorkFlow = () => {
   return (
     <section className="section">
       <div className="left-section">
-        <h1>WorkFlow Creator</h1>
+        <h1 onClick={navigateToBack}>WorkFlow Creator</h1>
         <button className="button" onClick={navigateToBack}>
           Go back
         </button>

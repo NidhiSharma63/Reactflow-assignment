@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyEdgeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
@@ -30,14 +31,11 @@ const DnDFlow = () => {
   const { mutateAsync, error } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
   const id = useMemo(() => uuidv4(), []);
+
+  const navigate = useNavigate();
+
   const onConnect = useCallback(
     (params) => {
-      // const nodeIsAlreadyConnected = edges.some((edge) => edge.target === params.source);
-      // console.log(nodeIsAlreadyConnected, "nodeIsAlreadyConnected", edges, params);
-      // if (nodeIsAlreadyConnected) {
-      //   toast.error("You have connected this node already");
-      //   return;
-      // }
       const invalidConnection = edges.some((edge) => {
         return edge.source === params.target && edge.target === params.source;
       });
@@ -179,7 +177,7 @@ const DnDFlow = () => {
   return (
     <section className="section">
       <div className="left-section">
-        <h1>WorkFlow Creator</h1>
+        <h1 onClick={navigateToBack}>WorkFlow Creator</h1>
         <div className="nodes-container">
           <p>WorkFlow id - {id}</p>
           <div

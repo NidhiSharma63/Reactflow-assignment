@@ -51,14 +51,12 @@ const Home = () => {
               <div className="workflow-list-container">
                 {data?.map((workflow) => {
                   return (
-                    <>
-                      <div className="workflow" key={workflow}>
-                        <p>
-                          Workflow Id:
-                          {workflow}
-                        </p>
-                      </div>
-                    </>
+                    <div className="workflow" key={workflow}>
+                      <p>
+                        Workflow Id:
+                        {workflow}
+                      </p>
+                    </div>
                   );
                 })}
               </div>
