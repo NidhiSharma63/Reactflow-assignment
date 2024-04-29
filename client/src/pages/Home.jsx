@@ -12,7 +12,7 @@ const Home = () => {
     navigate("/trigger-workflow");
   }, []);
   return (
-    <section className="home">
+    <section className="section">
       <div className="left-section">
         <h1>WorkFlow Creator</h1>
         {data?.length > 0 && (

@@ -1,23 +1,21 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import ReactFlow, {
-  Controls,
-  ReactFlowProvider,
-  addEdge,
-  applyEdgeChanges,
-  useEdgesState,
-  useNodesState,
-} from "reactflow";
+import ReactFlow, { Controls, addEdge, applyEdgeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
 import { useCreateWorkflow } from "src/hooks/useWorkflow";
 import { v4 as uuidv4 } from "uuid";
-import { FilterDataComponent, SendPostRequestComponent, Sidebar } from "../component/Sidebar";
+import {
+  ConvertFormatComponent,
+  FilterDataComponent,
+  SendPostRequestComponent,
+  WaitComponent,
+} from "../component/Sidebar";
 
 let nodeType = {
   "Filter Data": FilterDataComponent,
   "Send Post Request": SendPostRequestComponent,
-  // Wait: WaitComponent,
-  // "Convert Format": ConvertFormatComponent,
+  Wait: WaitComponent,
+  "Convert Format": ConvertFormatComponent,
 };
 const initialNodes = [];
 
@@ -130,6 +128,7 @@ const DnDFlow = () => {
         // console.log({ indexNumber });
         return flow.nodes[indexNumber].data.label;
       });
+      console.log(extractedValues, "extractedValues");
 
       // console.log({ extractedValues });
 
@@ -144,7 +143,7 @@ const DnDFlow = () => {
         return;
       }
 
-      // setIsLoading(true);
+      setIsLoading(true);
       mutateAsync({
         workFlowSequence: [...extractedValues, "End"],
         workFlowId: id,
@@ -170,9 +169,45 @@ const DnDFlow = () => {
     [setEdges]
   );
 
+  const onDragStart = (event, nodeType) => {
+    event.dataTransfer.setData("application/reactflow", nodeType);
+    event.dataTransfer.effectAllowed = "move";
+  };
+  const navigateToBack = useCallback(() => {
+    navigate("/");
+  }, []);
   return (
-    <div className="dndflow">
-      <ReactFlowProvider>
+    <section className="section">
+      <div className="left-section">
+        <h1>WorkFlow Creator</h1>
+        <div className="nodes-container">
+          <p>WorkFlow id - {id}</p>
+          <div
+            className="dndnode start"
+            onDragStart={(event) => onDragStart(event, "input")}
+            draggable={nodes.some((node) => node.type === "input") ? false : true}
+            style={{
+              opacity: nodes.some((node) => node.type === "input") ? ".2" : "1",
+            }}>
+            Start
+          </div>
+          <FilterDataComponent nodes={nodes} />
+          <SendPostRequestComponent nodes={nodes} />
+          <ConvertFormatComponent nodes={nodes} />
+          <WaitComponent nodes={nodes} />
+          <div
+            className="dndnode output"
+            onDragStart={(event) => onDragStart(event, "output")}
+            draggable={nodes.some((node) => node.type === "output") ? false : true}
+            style={{
+              opacity: nodes.some((node) => node.type === "output") ? ".2" : "1",
+            }}>
+            End
+          </div>
+        </div>
+      </div>
+
+      <div className="dnd-section">
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
@@ -185,14 +220,16 @@ const DnDFlow = () => {
             onEdgeClick={onEdgeClick}
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeType}
+            fitViewOptions={{ padding: 6 }}
             fitView>
             <Controls />
           </ReactFlow>
         </div>
-        <Sidebar edges={edges} nodes={nodes} />
-      </ReactFlowProvider>
-      <button onClick={saveWorkFlow}>Save</button>
-    </div>
+        <button className="button" onClick={saveWorkFlow}>
+          Save
+        </button>
+      </div>
+    </section>
   );
 };
 
