@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -10,8 +10,15 @@ const TriggerWorkFlow = () => {
   const { data } = useGetWorkflows();
   const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
   const navigate = useNavigate();
+  const [step, setStep] = useState("start");
   // const { work_flows_ids } = useSelector(appDataInStore);
   console.log({ isPending });
+
+  useEffect(() => {
+    if (workflowStatus) {
+      setStep(workflowStatus.step);
+    }
+  }, [workflowStatus]);
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles[0].type !== "text/csv") {
@@ -62,7 +69,7 @@ const TriggerWorkFlow = () => {
                 <div className="center">
                   <div className="loader"></div>
                   <p>
-                    Step <strong>{workflowStatus?.step ? workflowStatus?.step : "Start"}</strong> is in progress
+                    Step <strong>{step}</strong> is in progress
                   </p>
                 </div>
               }
