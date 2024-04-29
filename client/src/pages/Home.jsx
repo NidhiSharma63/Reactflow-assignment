@@ -21,42 +21,47 @@ const Home = () => {
           </button>
         )}
       </div>
-      <div className="side-section">
+      <div className="right-section">
         {data?.length > 0 && (
-          <div className="workflow-middle">
-            <p className="workflow-title">you have following workflows</p>
-            <button className="workflow-button" onClick={handleClickOnCreateWorkflow}>
-              Create New WorkFlow
-            </button>
-          </div>
+          <button className="button create-workflow" onClick={handleClickOnCreateWorkflow}>
+            Create New WorkFlow
+          </button>
         )}
 
         {data?.length === 0 && !isPending ? (
           <>
-            <div className="no-workflow">
-              <p>
-                you don't have any workflow.
-                <br />
-                To Trigger workflow please create first.
-              </p>
-              <button className="workflow-button" onClick={handleClickOnCreateWorkflow}>
-                Create WorkFlow
-              </button>
+            <div className="workflow-container">
+              <div className="no-workflow">
+                <p>
+                  you don't have any workflow.
+                  <br />
+                  To Trigger workflow please create first.
+                </p>
+                <button className="button no-workflow-button" onClick={handleClickOnCreateWorkflow}>
+                  Create WorkFlow
+                </button>
+              </div>
             </div>
           </>
         ) : (
           <>
             <div className="workflow-container">
+              <p>You have following workflows</p>
               {isPending && <div style={{ textAlign: "center", width: "100%" }}>Loading...</div>}
-              {data?.map((workflow) => {
-                return (
-                  <>
-                    <div className="workflow" key={workflow}>
-                      <p>{workflow}</p>
-                    </div>
-                  </>
-                );
-              })}
+              <div className="workflow-list-container">
+                {data?.map((workflow) => {
+                  return (
+                    <>
+                      <div className="workflow" key={workflow}>
+                        <p>
+                          Workflow Id:
+                          {workflow}
+                        </p>
+                      </div>
+                    </>
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
