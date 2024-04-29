@@ -120,17 +120,12 @@ const DnDFlow = () => {
         return;
       }
       const getAllSourceValues = flow.edges.map((edge) => edge.source);
-      console.log({ getAllSourceValues }, flow.edges, flow.nodes);
       const extractedValues = getAllSourceValues.map((index) => {
         const indexNumber = +index;
-        // console.log({ indexNumber });
+        const el = flow.nodes[indexNumber];
+        console.log({ el });
         return flow.nodes[indexNumber].data.label;
       });
-      console.log(extractedValues, "extractedValues");
-
-      // console.log({ extractedValues });
-
-      // console.log({ extractedValues });
       if (extractedValues[0] !== "Start") {
         toast.error("First node must be Start");
         return;
@@ -149,7 +144,7 @@ const DnDFlow = () => {
         setIsLoading(false);
       });
     }
-  }, [nodes, edges, id]);
+  }, [nodes, edges, id, reactFlowInstance]);
 
   const onEdgesChange = useCallback((changes) => {
     setEdges((eds) => applyEdgeChanges(changes, eds));
