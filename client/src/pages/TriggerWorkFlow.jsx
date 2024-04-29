@@ -11,6 +11,7 @@ const TriggerWorkFlow = () => {
   const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
   const navigate = useNavigate();
   // const { work_flows_ids } = useSelector(appDataInStore);
+  console.log({ isPending });
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles[0].type !== "text/csv") {
@@ -55,13 +56,13 @@ const TriggerWorkFlow = () => {
       </div>
       <div className="right-section">
         <div className="workflow-container ">
-          {workflowStatus ? (
+          {isPending ? (
             <>
               {
                 <div className="center">
                   <div className="loader"></div>
                   <p>
-                    Step <strong>{workflowStatus?.step}</strong> is in progress
+                    Step <strong>{workflowStatus?.step ? workflowStatus?.step : "Start"}</strong> is in progress
                   </p>
                 </div>
               }

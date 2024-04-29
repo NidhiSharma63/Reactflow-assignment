@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { queryClient } from "src/main";
 import { customAxiosRequestForPost } from "src/utils/AxiosRequest";
+import { v4 as uuid } from "uuid";
 import { customAxiosRequestForGet } from "../utils/AxiosRequest";
 
 let shouldFetch = false;
@@ -48,9 +49,10 @@ const useGetWorkflows = () => {
   return useQuery({ queryKey: ["workflowsIds"], queryFn: () => customAxiosRequestForGet("/workflows") });
 };
 
+const id = uuid();
 const useGetWorkflowStatus = ({ enabled }) => {
   return useQuery({
-    queryKey: ["workflowStatus", enabled],
+    queryKey: ["workflowStatus", id],
     queryFn: () => customAxiosRequestForGet("/workflow-status"),
     enabled: enabled,
     refetchInterval: 500,

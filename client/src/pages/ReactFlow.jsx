@@ -219,7 +219,7 @@ const DnDFlow = () => {
           </ReactFlow>
         </div>
         <button className="button" onClick={saveWorkFlow}>
-          Save
+          {isLoading ? "Saving..." : "Save"}
         </button>
       </div>
     </section>
