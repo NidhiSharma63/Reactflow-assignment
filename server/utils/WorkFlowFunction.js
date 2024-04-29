@@ -7,7 +7,7 @@ const parseCsv = (buffer) => {
     Papa.parse(csvString, {
       header: true,
       complete: (results) => {
-        console.log(results.data, "parsed data");
+        // console.log(results.data, "parsed data");
         return resolve(results.data);
       },
       error: (error) => reject(error),
