@@ -61,7 +61,7 @@ body {
   padding: 30px;
 }
 .workflow-container .no-workflow {
-  border: 1px solid green;
+  /* border: 1px solid green; */
   display: flex;
   flex-direction: column;
   text-align: center;
