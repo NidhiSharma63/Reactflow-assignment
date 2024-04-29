@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Header from "src/common/header";
 import { useGetWorkflowStatus, useGetWorkflows, useTriggerWorkFlow } from "src/hooks/useWorkflow";
 const TriggerWorkFlow = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -9,7 +9,7 @@ const TriggerWorkFlow = () => {
   const { mutate, isPending, data: isWorkedFlowTriggerred } = useTriggerWorkFlow();
   const { data } = useGetWorkflows();
   const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
-
+  const navigate = useNavigate();
   // const { work_flows_ids } = useSelector(appDataInStore);
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -41,61 +41,76 @@ const TriggerWorkFlow = () => {
     mutate(formData);
   }, [workflowId, selectedFile]);
 
+  const navigateToBack = useCallback(() => {
+    navigate("/");
+  }, []);
+
   return (
-    <div>
-      <Header />
-      {workflowStatus ? (
-        <>
-          {
-            <div>
-              <div className="center">
-                <div className="loader"></div>
-                <h1>Step {workflowStatus?.step} is in progress</h1>
-              </div>
+    <section className="home">
+      <div className="left-section">
+        <h1>WorkFlow Creator</h1>
+        <button className="button" onClick={navigateToBack}>
+          Go back
+        </button>
+      </div>
+      <div className="right-section">
+        <div className="workflow-container ">
+          {workflowStatus ? (
+            <>
+              {
+                <div className="center">
+                  <div className="loader"></div>
+                  <p>
+                    Step <strong>{workflowStatus?.step}</strong> is in progress
+                  </p>
+                </div>
+              }
+            </>
+          ) : isWorkedFlowTriggerred ? (
+            <div className="center">
+              <h1>WorkFlow Triggered</h1>
             </div>
-          }
-        </>
-      ) : isWorkedFlowTriggerred ? (
-        <div className="center">
-          <h1>WorkFlow Triggered</h1>
+          ) : (
+            <>
+              <div {...getRootProps()} className="dropzone">
+                <input {...getInputProps()} />
+
+                {!selectedFile ? (
+                  <div className="inner-container">
+                    <i className="upload-icon fa-solid fa-cloud-arrow-up"></i>
+
+                    <p>Upload .CSV </p>
+                    <div className="text-wrapper">Select from Compouter OR Drag and Drop</div>
+                  </div>
+                ) : (
+                  <p>{selectedFile.name}</p>
+                )}
+              </div>
+              <div className="bottom-section">
+                <div>
+                  <label htmlFor="ids">Select Workflow id:</label>
+                  {/* add space using html */}
+                  &nbsp; &nbsp; &nbsp;
+                  <select onChange={(e) => setWorkflowId(e.target.value)}>
+                    <option value="">--Please choose an option--</option>
+                    {data?.map((workflow) => (
+                      <option key={workflow} value={workflow}>
+                        {workflow}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <button className="button" onClick={RunWorkFlow}>
+                    Run Workflow
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
-      ) : (
-        <>
-          <div {...getRootProps()} className="dropzone">
-            <input {...getInputProps()} />
-
-            {!selectedFile ? (
-              <div className="inner-container">
-                <i className="upload-icon fa-solid fa-cloud-arrow-up"></i>
-
-                <p>.CSV </p>
-                <div className="text-wrapper">Select from Compouter OR Drag and Drop</div>
-              </div>
-            ) : (
-              <p>{selectedFile.name}</p>
-            )}
-          </div>
-          <div className="bottom-section">
-            <div>
-              <label htmlFor="ids">Select Workflow id:</label>
-              <select onChange={(e) => setWorkflowId(e.target.value)}>
-                <option value="">--Please choose an option--</option>
-                {data?.map((workflow) => (
-                  <option key={workflow} value={workflow}>
-                    {workflow}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <button className="workflow-button" onClick={RunWorkFlow}>
-                Run Workflow
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+      </div>
+    </section>
   );
 };
 
