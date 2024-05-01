@@ -2,14 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useGetWorkflowStatus, useGetWorkflows, useTriggerWorkFlow } from "src/hooks/useWorkflow";
+import { useGetWorkflows, useTriggerWorkFlow } from "src/hooks/useWorkflow";
 import { useSocket } from "../Provider/SocketProvider";
 const TriggerWorkFlow = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [workflowId, setWorkflowId] = useState(null);
   const { mutate, isPending, data: isWorkedFlowTriggerred } = useTriggerWorkFlow();
   const { data } = useGetWorkflows();
-  const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
+  // const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
   const navigate = useNavigate();
   const [step, setStep] = useState("start");
   const socket = useSocket();
@@ -17,7 +17,7 @@ const TriggerWorkFlow = () => {
   // console.log({ isPending });
 
   useEffect(() => {
-    console.log("first", socket);
+    // console.log("first", socket);
     if (socket) {
       socket.on("connect", () => {
         console.log("Connected to server");
