@@ -170,6 +170,22 @@ const DnDFlow = () => {
   const navigateToBack = useCallback(() => {
     navigate("/");
   }, []);
+
+  const onNodeDelete = useCallback(
+    (nodeId) => {
+      setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+      setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+    },
+    [setNodes, setEdges]
+  );
+
+  const onNodeClick = useCallback(
+    (event, node) => {
+      event.preventDefault(); // Optional: Prevent any default behavior
+      onNodeDelete(node.id); // Deletes the node and its connected edges
+    },
+    [onNodeDelete]
+  );
   return (
     <section className="section">
       <div className="left-section">
@@ -205,6 +221,7 @@ const DnDFlow = () => {
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
+            onNodeClick={onNodeClick}
             edges={edges}
             onNodesChange={onNodesChange}
             onConnect={onConnect}
