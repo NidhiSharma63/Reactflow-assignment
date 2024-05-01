@@ -2,7 +2,7 @@ import React from "react";
 import { Handle, Position } from "reactflow";
 
 /** custom component for node */
-const FilterDataComponent = () => {
+const FilterDataComponent = ({ nodes, isSideBar = false }) => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
@@ -12,6 +12,16 @@ const FilterDataComponent = () => {
       <div className="dndnode Filter Data" onDragStart={(event) => onDragStart(event, "Filter Data")} draggable>
         Filter Data
       </div>
+
+      {!isSideBar && (
+        <input
+          onClick={(e) => e.stopPropagation()}
+          className="filter-input"
+          type="text"
+          placeholder="Enter a column to filter the data"
+          style={{ marginTop: 5 }}
+        />
+      )}
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />
     </>

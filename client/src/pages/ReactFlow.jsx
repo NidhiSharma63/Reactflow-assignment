@@ -228,7 +228,7 @@ const DnDFlow = () => {
             }}>
             Start
           </div>
-          <FilterDataComponent />
+          <FilterDataComponent nodes={nodes} isSideBar={true} />
           <SendPostRequestComponent />
           <ConvertFormatComponent />
           <WaitComponent />
