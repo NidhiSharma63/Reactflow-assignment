@@ -89,7 +89,7 @@ const DnDFlow = () => {
         y: event.clientY,
       });
       const newNode = {
-        id: getId(),
+        id: uuidv4(),
         type,
         position,
         data: { label: `${type === "input" ? "begin" : type === "output" ? "End" : type}` },
@@ -120,12 +120,8 @@ const DnDFlow = () => {
         return;
       }
       const getAllSourceValues = flow.edges.map((edge) => edge.source);
-      const extractedValues = getAllSourceValues.map((index) => {
-        const indexNumber = +index;
-        // const el = flow.nodes[indexNumber];
-        // console.log(indexNumber, flow.nodes);
-        // console.log({ el });
-        return flow.nodes[indexNumber].data.label;
+      const extractedValues = getAllSourceValues.map((id) => {
+        return flow.nodes.find((node) => node.id === id).data.label;
       });
       if (extractedValues[0] !== "begin") {
         toast.error("First node must be begin");
@@ -138,12 +134,12 @@ const DnDFlow = () => {
       }
 
       setIsLoading(true);
-      mutateAsync({
-        workFlowSequence: [...extractedValues, "End"],
-        workFlowId: id,
-      }).then(() => {
-        setIsLoading(false);
-      });
+      // mutateAsync({
+      //   workFlowSequence: [...extractedValues, "End"],
+      //   workFlowId: id,
+      // }).then(() => {
+      //   setIsLoading(false);
+      // });
     }
   }, [nodes, edges, id, reactFlowInstance]);
 
@@ -199,7 +195,7 @@ const DnDFlow = () => {
             style={{
               opacity: nodes.some((node) => node.type === "input") ? ".2" : "1",
             }}>
-            Begin
+            Start
           </div>
           <FilterDataComponent nodes={nodes} />
           <SendPostRequestComponent nodes={nodes} />
@@ -231,7 +227,7 @@ const DnDFlow = () => {
             onEdgeClick={onEdgeClick}
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeType}
-            fitViewOptions={{ padding: 6 }}
+            fitViewOptions={{ padding: 4 }}
             fitView>
             <Controls />
           </ReactFlow>
