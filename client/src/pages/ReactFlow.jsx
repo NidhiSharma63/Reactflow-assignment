@@ -92,7 +92,7 @@ const DnDFlow = () => {
         id: getId(),
         type,
         position,
-        data: { label: `${type === "input" ? "Start" : type === "output" ? "End" : type}` },
+        data: { label: `${type === "input" ? "begin" : type === "output" ? "End" : type}` },
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -126,8 +126,8 @@ const DnDFlow = () => {
         console.log({ el });
         return flow.nodes[indexNumber].data.label;
       });
-      if (extractedValues[0] !== "Start") {
-        toast.error("First node must be Start");
+      if (extractedValues[0] !== "begin") {
+        toast.error("First node must be begin");
         return;
       }
 
