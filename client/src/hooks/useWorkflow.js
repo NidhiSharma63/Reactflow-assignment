@@ -54,7 +54,7 @@ const useGetWorkflowStatus = ({ enabled }) => {
   return useQuery({
     queryKey: ["workflowStatus", id],
     queryFn: () => customAxiosRequestForGet("/workflow-status"),
-    enabled: enabled,
+    enabled: false,
     refetchInterval: 500,
     refetchIntervalInBackground: true,
   });

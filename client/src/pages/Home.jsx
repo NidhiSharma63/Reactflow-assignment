@@ -1,9 +1,12 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetWorkflows } from "src/hooks/useWorkflow";
+import { useSocket } from "../Provider/SocketProvider";
 const Home = () => {
   const { data, isPending } = useGetWorkflows();
   const navigate = useNavigate();
+  const socket = useSocket();
+
   const handleClickOnCreateWorkflow = useCallback(() => {
     navigate("/workflow");
   }, []);
