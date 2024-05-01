@@ -1,7 +1,8 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
 
-const FilterDataComponent = ({ nodes }) => {
+/** custom component for node */
+const FilterDataComponent = () => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
@@ -17,7 +18,7 @@ const FilterDataComponent = ({ nodes }) => {
   );
 };
 
-const SendPostRequestComponent = ({ nodes }) => {
+const SendPostRequestComponent = () => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
@@ -36,7 +37,7 @@ const SendPostRequestComponent = ({ nodes }) => {
   );
 };
 
-const ConvertFormatComponent = ({ nodes }) => {
+const ConvertFormatComponent = () => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
@@ -52,7 +53,7 @@ const ConvertFormatComponent = ({ nodes }) => {
   );
 };
 
-const WaitComponent = ({ nodes }) => {
+const WaitComponent = () => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";

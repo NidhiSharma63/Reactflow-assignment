@@ -9,15 +9,12 @@ const TriggerWorkFlow = () => {
   const [workflowId, setWorkflowId] = useState(null);
   const { mutate, isPending, data: isWorkedFlowTriggerred } = useTriggerWorkFlow();
   const { data } = useGetWorkflows();
-  // const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
   const navigate = useNavigate();
-  const [step, setStep] = useState("start");
+  const [step, setStep] = useState("Start");
   const socket = useSocket();
-  // const { work_flows_ids } = useSelector(appDataInStore);
-  // console.log({ isPending });
 
+  //  setup a connection between server and client
   useEffect(() => {
-    // console.log("first", socket);
     if (socket) {
       socket.on("connect", () => {
         console.log("Connected to server");

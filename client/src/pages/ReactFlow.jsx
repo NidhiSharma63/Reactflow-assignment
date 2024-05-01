@@ -25,17 +25,22 @@ const getId = () => `${id++}`;
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
+
+  // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const { mutateAsync, error } = useCreateWorkflow();
+  const { mutateAsync } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
+
+  // storing id in useMemo so it doesn't change on every render
   const id = useMemo(() => uuidv4(), []);
 
   const navigate = useNavigate();
 
   const onConnect = useCallback(
     (params) => {
+      // Check if the edge already exists (Rule 1)
       const invalidConnection = edges.some((edge) => {
         return edge.source === params.target && edge.target === params.source;
       });
@@ -43,20 +48,21 @@ const DnDFlow = () => {
         toast.error("Invalid Connection");
         return;
       }
-      // Check that source and target nodes are not the same (Rule 1)
+
+      // if user trying to connect a node to itself do throw an error (Rule 2)
       if (params.source === params.target) {
         toast.error("Cannot connect a node to itself.");
         return;
       }
 
-      // Check if the source node already has an outgoing connection (Rule 2)
+      // Check if the source node already has an outgoing connection (Rule 3)
       const sourceHasOutgoingConnection = edges.some((edge) => edge.source === params.source);
       if (sourceHasOutgoingConnection) {
         toast.error("This node already has an outgoing connection.");
         return;
       }
 
-      // Check if the target node already has an incoming connection (Rule 3)
+      // Check if the target node already has an incoming connection (Rule 4)
       const targetHasIncomingConnection = edges.some((edge) => edge.target === params.target);
       if (targetHasIncomingConnection) {
         toast.error("This node already has an incoming connection.");
@@ -88,6 +94,8 @@ const DnDFlow = () => {
         x: event.clientX,
         y: event.clientY,
       });
+
+      // create new node on drop
       const newNode = {
         id: uuidv4(),
         type,
@@ -108,6 +116,7 @@ const DnDFlow = () => {
       };
       // console.log(flow);
 
+      // check if all nodes are present connect to each other
       if (flow.edges.length < flow.nodes.length - 1) {
         toast.error("Please add All nodes in the flow");
         return;
@@ -115,15 +124,21 @@ const DnDFlow = () => {
 
       const isEndIncludedInNode = flow.nodes.some((node) => node.data.label === "End");
 
+      // check if end is include or not in node
       if (!isEndIncludedInNode) {
         toast.error("Please add End node in the flow");
         return;
       }
+
+      // extract all source values
       const getAllSourceValues = flow.edges.map((edge) => edge.source);
+
+      // find all nodes with same id
       const extractedValues = getAllSourceValues.map((id) => {
         return flow.nodes.find((node) => node.id === id).data.label;
       });
 
+      // check if start node is present
       if (extractedValues[0] !== "Start") {
         toast.error("First node must be Start");
         return;
@@ -143,6 +158,7 @@ const DnDFlow = () => {
         return;
       }
 
+      /** check if end node is present */
       if (extractedValues.includes("End")) {
         toast.error("Last node must be End");
         return;
@@ -212,10 +228,10 @@ const DnDFlow = () => {
             }}>
             Start
           </div>
-          <FilterDataComponent nodes={nodes} />
-          <SendPostRequestComponent nodes={nodes} />
-          <ConvertFormatComponent nodes={nodes} />
-          <WaitComponent nodes={nodes} />
+          <FilterDataComponent />
+          <SendPostRequestComponent />
+          <ConvertFormatComponent />
+          <WaitComponent />
           <div
             className="dndnode output"
             onDragStart={(event) => onDragStart(event, "output")}
