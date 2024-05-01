@@ -92,7 +92,7 @@ const DnDFlow = () => {
         id: uuidv4(),
         type,
         position,
-        data: { label: `${type === "input" ? "begin" : type === "output" ? "End" : type}` },
+        data: { label: `${type === "input" ? "Start" : type === "output" ? "End" : type}` },
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -123,8 +123,23 @@ const DnDFlow = () => {
       const extractedValues = getAllSourceValues.map((id) => {
         return flow.nodes.find((node) => node.id === id).data.label;
       });
-      if (extractedValues[0] !== "begin") {
-        toast.error("First node must be begin");
+
+      if (extractedValues[0] !== "Start") {
+        toast.error("First node must be Start");
+        return;
+      }
+
+      /** check if more start node is present more than one time*/
+
+      if (extractedValues.filter((value) => value === "Start").length > 1) {
+        toast.error("Only one start node is allowed");
+        return;
+      }
+
+      /** check if last node is present more then one time */
+
+      if (extractedValues.filter((value) => value === "End").length > 1) {
+        toast.error("Only one end node is allowed");
         return;
       }
 
@@ -134,12 +149,12 @@ const DnDFlow = () => {
       }
 
       setIsLoading(true);
-      // mutateAsync({
-      //   workFlowSequence: [...extractedValues, "End"],
-      //   workFlowId: id,
-      // }).then(() => {
-      //   setIsLoading(false);
-      // });
+      mutateAsync({
+        workFlowSequence: [...extractedValues, "End"],
+        workFlowId: id,
+      }).then(() => {
+        setIsLoading(false);
+      });
     }
   }, [nodes, edges, id, reactFlowInstance]);
 
