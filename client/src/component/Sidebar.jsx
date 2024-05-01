@@ -8,13 +8,7 @@ const FilterDataComponent = ({ nodes }) => {
   };
   return (
     <>
-      <div
-        className="dndnode Filter Data"
-        onDragStart={(event) => onDragStart(event, "Filter Data")}
-        draggable={nodes?.some((node) => node.type === "Filter Data") ? false : true}
-        style={{
-          opacity: nodes?.some((node) => node.type === "Filter Data") ? ".2" : "1",
-        }}>
+      <div className="dndnode Filter Data" onDragStart={(event) => onDragStart(event, "Filter Data")} draggable>
         Filter Data
       </div>
       <Handle type="target" position={Position.Top} />
@@ -33,10 +27,7 @@ const SendPostRequestComponent = ({ nodes }) => {
       <div
         className="dndnode Send Post Request"
         onDragStart={(event) => onDragStart(event, "Send Post Request")}
-        draggable={nodes?.some((node) => node.type === "Send Post Request") ? false : true}
-        style={{
-          opacity: nodes?.some((node) => node.type === "Send Post Request") ? ".2" : "1",
-        }}>
+        draggable>
         Send Post Request
       </div>
       <Handle type="target" position={Position.Top} />
@@ -52,11 +43,7 @@ const ConvertFormatComponent = ({ nodes }) => {
   };
   return (
     <>
-      <div
-        className="dndnode Convert Format"
-        onDragStart={(event) => onDragStart(event, "Convert Format")}
-        draggable={nodes?.some((node) => node.type === "Convert Format") ? false : true}
-        style={{ opacity: nodes?.some((node) => node.type === "Convert Format") ? ".2" : "1" }}>
+      <div className="dndnode Convert Format" onDragStart={(event) => onDragStart(event, "Convert Format")} draggable>
         Convert Format
       </div>
       <Handle type="target" position={Position.Top} />
@@ -72,11 +59,7 @@ const WaitComponent = ({ nodes }) => {
   };
   return (
     <>
-      <div
-        className="dndnode Wait"
-        onDragStart={(event) => onDragStart(event, "Wait")}
-        draggable={nodes?.some((node) => node.type === "Wait") ? false : true}
-        style={{ opacity: nodes?.some((node) => node.type === "Wait") ? ".2" : "1" }}>
+      <div className="dndnode Wait" onDragStart={(event) => onDragStart(event, "Wait")} draggable>
         Wait
       </div>
       <Handle type="target" position={Position.Top} />
