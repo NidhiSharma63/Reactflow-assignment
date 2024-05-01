@@ -182,7 +182,7 @@ const DnDFlow = () => {
             style={{
               opacity: nodes.some((node) => node.type === "input") ? ".2" : "1",
             }}>
-            Start
+            Begin
           </div>
           <FilterDataComponent nodes={nodes} />
           <SendPostRequestComponent nodes={nodes} />
