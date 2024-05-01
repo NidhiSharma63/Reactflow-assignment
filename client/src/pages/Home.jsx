@@ -14,7 +14,7 @@ const Home = () => {
   return (
     <section className="section">
       <div className="left-section">
-        <h1>WorkFlow </h1>
+        <h1>WorkFlow  -  trigger</h1>
         {data?.length > 0 && (
           <button className="button" onClick={handleNavigateToTriggerWorkflow}>
             Trigger WorkFlow
