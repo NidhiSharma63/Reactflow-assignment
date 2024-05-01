@@ -2,23 +2,37 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useGetWorkflowStatus, useGetWorkflows, useTriggerWorkFlow } from "src/hooks/useWorkflow";
+import { useGetWorkflows, useTriggerWorkFlow } from "src/hooks/useWorkflow";
+import { useSocket } from "../Provider/SocketProvider";
 const TriggerWorkFlow = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [workflowId, setWorkflowId] = useState(null);
   const { mutate, isPending, data: isWorkedFlowTriggerred } = useTriggerWorkFlow();
   const { data } = useGetWorkflows();
-  const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
+  // const { data: workflowStatus } = useGetWorkflowStatus({ enabled: isPending });
   const navigate = useNavigate();
   const [step, setStep] = useState("start");
+  const socket = useSocket();
   // const { work_flows_ids } = useSelector(appDataInStore);
-  console.log({ isPending });
+  // console.log({ isPending });
 
   useEffect(() => {
-    if (workflowStatus) {
-      setStep(workflowStatus.step);
+    // console.log("first", socket);
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("Connected to server");
+      });
+
+      socket.on("workflowUpdate", (data) => {
+        setStep(data.step);
+      });
+
+      return () => {
+        socket.off("connect");
+        socket.off("workflowUpdate");
+      };
     }
-  }, [workflowStatus]);
+  }, [socket]);
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles[0].type !== "text/csv") {

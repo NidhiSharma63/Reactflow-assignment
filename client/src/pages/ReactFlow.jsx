@@ -122,8 +122,9 @@ const DnDFlow = () => {
       const getAllSourceValues = flow.edges.map((edge) => edge.source);
       const extractedValues = getAllSourceValues.map((index) => {
         const indexNumber = +index;
-        const el = flow.nodes[indexNumber];
-        console.log({ el });
+        // const el = flow.nodes[indexNumber];
+        // console.log(indexNumber, flow.nodes);
+        // console.log({ el });
         return flow.nodes[indexNumber].data.label;
       });
       if (extractedValues[0] !== "begin") {

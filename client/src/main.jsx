@@ -12,6 +12,7 @@ import TriggerWorkFlow from "src/pages/TriggerWorkFlow";
 import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import "./App.css";
+import { SocketProvider } from "./Provider/SocketProvider";
 
 export const queryClient = new QueryClient();
 const RequiredAuth = ({ children }) => {
@@ -47,9 +48,11 @@ const router = createBrowserRouter([
     element: (
       <RequiredAuth>
         {" "}
+        {/* <SocketProvider> */}
         <ReactFlowProvider>
           <ReactWorkFlowComponent />
         </ReactFlowProvider>
+        {/* </SocketProvider> */}
       </RequiredAuth>
     ),
   },
@@ -58,7 +61,9 @@ const router = createBrowserRouter([
     element: (
       <RequiredAuth>
         {" "}
-        <TriggerWorkFlow />
+        <SocketProvider>
+          <TriggerWorkFlow />
+        </SocketProvider>
       </RequiredAuth>
     ),
   },
