@@ -5,6 +5,7 @@ import ReactFlow, { Controls, addEdge, applyEdgeChanges, useEdgesState, useNodes
 import "reactflow/dist/style.css";
 import { useCreateWorkflow } from "src/hooks/useWorkflow";
 import { v4 as uuidv4 } from "uuid";
+import { useFilterData } from "../Provider/FilterDataProvider";
 import {
   ConvertFormatComponent,
   FilterDataComponent,
@@ -12,20 +13,34 @@ import {
   WaitComponent,
 } from "../component/Sidebar";
 
-const createFilterDataComponent = (props) => {
-  return function FilterDataComponentWrapper(nodeProps) {
-    return <FilterDataComponent {...props} {...nodeProps} />;
-  };
-};
+// const createFilterDataComponent = (props) => {
+//   return function FilterDataComponentWrapper(nodeProps) {
+//     return <FilterDataComponent {...props} {...nodeProps} />;
+//   };
+// };
 
 const initialNodes = [];
 
-let id = 0;
-const getId = () => `${id++}`;
+// Memoize the individual components outside the main component
+// const FilterDataNode = React.memo(({ data, id, onChange, isSideBar }) => (
+//   <FilterDataComponent data={data} id={id} onChange={onChange} isSideBar={isSideBar} />
+// ));
 
+// Keep other components static if they do not depend on external states
+const SendPostRequestComponentStatic = React.memo(SendPostRequestComponent);
+const WaitComponentStatic = React.memo(WaitComponent);
+const ConvertFormatComponentStatic = React.memo(ConvertFormatComponent);
+
+let nodeTypes = {
+  "Send Post Request": SendPostRequestComponentStatic,
+  Wait: WaitComponentStatic,
+  "Convert Format": ConvertFormatComponentStatic,
+  "Filter Data": FilterDataComponent,
+};
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
-  const [filterDataValues, setFilterDataValues] = useState({});
+  // const [filterDataValues, setFilterDataValues] = useState({});
+  const { filterDataValues, setFilterDataValues } = useFilterData();
 
   // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -142,6 +157,7 @@ const DnDFlow = () => {
         return flow.nodes.find((node) => node.id === id).data.label;
       });
 
+      console.log({ extractedValues }, flow.nodes, "nodes", flow.edges, "edges");
       // check if start node is present
       if (extractedValues[0] !== "Start") {
         toast.error("First node must be Start");
@@ -177,8 +193,9 @@ const DnDFlow = () => {
       //   setIsLoading(false);
       // });
     }
-  }, [nodes, edges, id, reactFlowInstance, filterDataValues]);
+  }, [nodes, edges, id, reactFlowInstance, filterDataValues, mutateAsync, setIsLoading, setFilterDataValues]);
 
+  // console.log({ filterDataValues }, "outside");
   const onEdgesChange = useCallback((changes) => {
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
@@ -219,19 +236,30 @@ const DnDFlow = () => {
     [onNodeDelete]
   );
 
-  const nodeType = useMemo(
-    () => ({
-      "Filter Data": createFilterDataComponent({
-        isSideBar: false,
-        setFilterDataValues: setFilterDataValues,
-        filterDataValues: filterDataValues,
-      }),
-      "Send Post Request": SendPostRequestComponent,
-      Wait: WaitComponent,
-      "Convert Format": ConvertFormatComponent,
-    }),
-    []
-  );
+  // const FilterDataNode = React.memo(({ isSideBar, setFilterDataValues, filterDataValues, ...props }) => (
+  //   <FilterDataComponent
+  //     {...props}
+  //     isSideBar={isSideBar}
+  //     setFilterDataValues={setFilterDataValues}
+  //     filterDataValues={filterDataValues}
+  //   />
+  // ));
+  // const nodeTypes = useMemo(
+  //   () => ({
+  //     "Filter Data": (node) => (
+  //       <FilterDataNode
+  //         {...node}
+  //         setFilterDataValues={setFilterDataValues}
+  //         filterDataValues={filterDataValues}
+  //         isSideBar={false}
+  //       />
+  //     ),
+  //     "Send Post Request": SendPostRequestComponentStatic,
+  //     Wait: WaitComponentStatic,
+  //     "Convert Format": ConvertFormatComponentStatic,
+  //   }),
+  //   []
+  // );
 
   return (
     <section className="section">
@@ -250,8 +278,8 @@ const DnDFlow = () => {
           </div>
           <FilterDataComponent
             isSideBar={true}
-            setFilterDataValues={setFilterDataValues}
-            filterDataValues={filterDataValues}
+            // setFilterDataValues={setFilterDataValues}
+            // filterDataValues={filterDataValues}
           />
           <SendPostRequestComponent />
           <ConvertFormatComponent />
@@ -281,7 +309,7 @@ const DnDFlow = () => {
             onDragOver={onDragOver}
             onEdgeClick={onEdgeClick}
             onEdgesChange={onEdgesChange}
-            nodeTypes={nodeType}
+            nodeTypes={nodeTypes}
             fitViewOptions={{ padding: 4 }}
             fitView>
             <Controls />

@@ -1,27 +1,27 @@
 import React, { useCallback } from "react";
 import { Handle, Position } from "reactflow";
+import { useFilterData } from "../Provider/FilterDataProvider";
 
 /** custom component for node */
-const FilterDataComponent = ({ isSideBar = false, setFilterDataValues, filterDataValues, id }) => {
+// memorized component
+const FilterDataComponent = ({ isSideBar = false, id }) => {
+  const { filterDataValues, setFilterDataValues } = useFilterData();
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
 
   if (!isSideBar) {
-    console.log({ isSideBar, setFilterDataValues, filterDataValues, id });
+    console.log({ isSideBar, filterDataValues, id });
   }
 
   const handleChange = useCallback(
     (e) => {
       if (id) {
-        // setFilterDataValues({ ...filterDataValues, [id]: e.target.value });
-        setFilterDataValues((prev) => {
-          return { ...prev, [id]: e.target.value };
-        });
+        setFilterDataValues((prev) => ({ ...prev, [id]: e.target.value }));
       }
     },
-    [id]
+    [id, setFilterDataValues]
   );
   return (
     <>
@@ -42,6 +42,10 @@ const FilterDataComponent = ({ isSideBar = false, setFilterDataValues, filterDat
     </>
   );
 };
+
+// const FilterDataComponent = ({ isSideBar = false, setFilterDataValues, filterDataValues, id }) => {
+
+// };
 
 const SendPostRequestComponent = () => {
   const onDragStart = (event, nodeType) => {
