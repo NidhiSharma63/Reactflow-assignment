@@ -11,18 +11,23 @@ const FilterDataComponent = ({ isSideBar = false, id }) => {
     event.dataTransfer.effectAllowed = "move";
   };
 
-  if (!isSideBar) {
-    console.log({ isSideBar, filterDataValues, id });
-  }
+  // if (!isSideBar) {
+  //   console.log({ isSideBar, filterDataValues, id });
+  // }
 
   const handleChange = useCallback(
     (e) => {
       if (id) {
-        setFilterDataValues((prev) => ({ ...prev, [id]: e.target.value }));
+        console.log("first");
+        setFilterDataValues((prev) => {
+          console.log({ prev });
+          return { ...prev, [id]: e.target.value };
+        });
       }
     },
     [id, setFilterDataValues]
   );
+  console.log({ filterDataValues });
   return (
     <>
       <div className="dndnode Filter Data" onDragStart={(event) => onDragStart(event, "Filter Data")} draggable>

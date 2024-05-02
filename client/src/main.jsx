@@ -49,12 +49,7 @@ const router = createBrowserRouter([
     element: (
       <RequiredAuth>
         {" "}
-        {/* <SocketProvider> */}
-        <ReactFlowProvider>
-          <FilterDataProvider>
-            <ReactWorkFlowComponent />
-          </FilterDataProvider>
-        </ReactFlowProvider>
+        <ReactWorkFlowComponent />
         {/* </SocketProvider> */}
       </RequiredAuth>
     ),
@@ -63,10 +58,7 @@ const router = createBrowserRouter([
     path: "/trigger-workflow",
     element: (
       <RequiredAuth>
-        {" "}
-        <SocketProvider>
-          <TriggerWorkFlow />
-        </SocketProvider>
+        <TriggerWorkFlow />
       </RequiredAuth>
     ),
   },
@@ -83,6 +75,12 @@ function App() {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ToastContainer />
-    <App />
+    <SocketProvider>
+      <FilterDataProvider>
+        <ReactFlowProvider>
+          <App />
+        </ReactFlowProvider>
+      </FilterDataProvider>
+    </SocketProvider>
   </React.StrictMode>
 );

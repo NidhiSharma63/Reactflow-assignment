@@ -120,7 +120,10 @@ const DnDFlow = () => {
       };
 
       if (type === "Filter Data") {
-        setFilterDataValues({ ...filterDataValues, [newNode.id]: "" });
+        setFilterDataValues((prevValues) => ({
+          ...prevValues,
+          [newNode.id]: "", // Initialize with an empty string or any default value
+        }));
       }
       setNodes((nds) => nds.concat(newNode));
     },
@@ -133,59 +136,40 @@ const DnDFlow = () => {
         nodes: reactFlowInstance.getNodes(),
         edges: reactFlowInstance.getEdges(),
       };
-      // console.log(flow);
-
-      // check if all nodes are present connect to each other
-      if (flow.edges.length < flow.nodes.length - 1) {
-        toast.error("Please add All nodes in the flow");
-        return;
-      }
-
-      const isEndIncludedInNode = flow.nodes.some((node) => node.data.label === "End");
-
-      // check if end is include or not in node
-      if (!isEndIncludedInNode) {
-        toast.error("Please add End node in the flow");
-        return;
-      }
 
       // extract all source values
       const getAllSourceValues = flow.edges.map((edge) => edge.source);
 
       // find all nodes with same id
       const extractedValues = getAllSourceValues.map((id) => {
-        return flow.nodes.find((node) => node.id === id).data.label;
+        const element = flow.nodes.find((node) => node.id === id);
+        const nodeDetails = { type: element.data.label };
+        // console.log({ element });
+        if (element.data.label === "Filter Data") {
+          nodeDetails.filterValue = filterDataValues[id];
+          return nodeDetails;
+        }
+        return nodeDetails;
       });
+      console.log({ extractedValues, filterDataValues });
 
-      console.log({ extractedValues }, flow.nodes, "nodes", flow.edges, "edges");
-      // check if start node is present
-      if (extractedValues[0] !== "Start") {
-        toast.error("First node must be Start");
-        return;
-      }
-
-      /** check if more start node is present more than one time*/
-
-      if (extractedValues.filter((value) => value === "Start").length > 1) {
-        toast.error("Only one start node is allowed");
-        return;
-      }
-
-      /** check if last node is present more then one time */
-
-      if (extractedValues.filter((value) => value === "End").length > 1) {
-        toast.error("Only one end node is allowed");
-        return;
-      }
-
-      /** check if end node is present */
-      if (extractedValues.includes("End")) {
-        toast.error("Last node must be End");
-        return;
-      }
+      // console.log({ extractedValues }, flow.nodes, "nodes", flow.edges, "edges");
 
       setIsLoading(true);
-      console.log({ filterDataValues });
+      // console.log({ filterDataValues });
+      // We will build the workflow steps here
+      // const workFlowSteps = flow.nodes.map((node) => {
+      //   const nodeDetails = { type: node.data.label };
+
+      //   // Check if this node is a 'filterData' node and include its filter value
+      //   if (node.type === "Filter Data" && filterDataValues[node.id]) {
+      //     nodeDetails.filterValue = filterDataValues[node.id];
+      //   }
+
+      //   return nodeDetails;
+      // });
+
+      // console.log({ workFlowSteps });
       // mutateAsync({
       //   workFlowSequence: [...extractedValues, "End"],
       //   workFlowId: id,
@@ -193,7 +177,7 @@ const DnDFlow = () => {
       //   setIsLoading(false);
       // });
     }
-  }, [nodes, edges, id, reactFlowInstance, filterDataValues, mutateAsync, setIsLoading, setFilterDataValues]);
+  }, [nodes, edges, id, reactFlowInstance, filterDataValues, mutateAsync, setIsLoading]);
 
   // console.log({ filterDataValues }, "outside");
   const onEdgesChange = useCallback((changes) => {
@@ -236,31 +220,6 @@ const DnDFlow = () => {
     [onNodeDelete]
   );
 
-  // const FilterDataNode = React.memo(({ isSideBar, setFilterDataValues, filterDataValues, ...props }) => (
-  //   <FilterDataComponent
-  //     {...props}
-  //     isSideBar={isSideBar}
-  //     setFilterDataValues={setFilterDataValues}
-  //     filterDataValues={filterDataValues}
-  //   />
-  // ));
-  // const nodeTypes = useMemo(
-  //   () => ({
-  //     "Filter Data": (node) => (
-  //       <FilterDataNode
-  //         {...node}
-  //         setFilterDataValues={setFilterDataValues}
-  //         filterDataValues={filterDataValues}
-  //         isSideBar={false}
-  //       />
-  //     ),
-  //     "Send Post Request": SendPostRequestComponentStatic,
-  //     Wait: WaitComponentStatic,
-  //     "Convert Format": ConvertFormatComponentStatic,
-  //   }),
-  //   []
-  // );
-
   return (
     <section className="section">
       <div className="left-section">
@@ -276,11 +235,7 @@ const DnDFlow = () => {
             }}>
             Start
           </div>
-          <FilterDataComponent
-            isSideBar={true}
-            // setFilterDataValues={setFilterDataValues}
-            // filterDataValues={filterDataValues}
-          />
+          <FilterDataComponent isSideBar={true} />
           <SendPostRequestComponent />
           <ConvertFormatComponent />
           <WaitComponent />
@@ -324,3 +279,28 @@ const DnDFlow = () => {
 };
 
 export default DnDFlow;
+// check if start node is present
+//  if (extractedValues[0] !== "Start") {
+//   toast.error("First node must be Start");
+//   return;
+// }
+
+// /** check if more start node is present more than one time*/
+
+// if (extractedValues.filter((value) => value === "Start").length > 1) {
+//   toast.error("Only one start node is allowed");
+//   return;
+// }
+
+// /** check if last node is present more then one time */
+
+// if (extractedValues.filter((value) => value === "End").length > 1) {
+//   toast.error("Only one end node is allowed");
+//   return;
+// }
+
+// /** check if end node is present */
+// if (extractedValues.includes("End")) {
+//   toast.error("Last node must be End");
+//   return;
+// }
