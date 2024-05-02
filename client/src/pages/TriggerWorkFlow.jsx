@@ -21,7 +21,7 @@ const TriggerWorkFlow = () => {
       });
 
       socket.on("workflowUpdate", (data) => {
-        setStep(data);
+        setStep(data.activeStep);
       });
 
       return () => {

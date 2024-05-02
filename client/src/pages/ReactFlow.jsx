@@ -32,7 +32,7 @@ const DnDFlow = () => {
   const { filterDataValues, isOnEditMode, workflowId } = useSelector(getAppData);
   const dispatch = useDispatch();
   const { data: workflowDetail } = useGetWorkFlowDetails(isOnEditMode ? workflowId : null);
-  const { mutateAsync: updateWorkflow } = useUpdateWorkflow();
+  const { mutateAsync: updateWorkflow, isPending: isUpdating } = useUpdateWorkflow();
   // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState([]);
@@ -46,7 +46,6 @@ const DnDFlow = () => {
       if (workflowDetail) {
         setEdges(workflowDetail.workFlowEdges);
         setNodes(workflowDetail.workFlowNodes);
-        console.log(workflowDetail.filterColumnValues, "hel");
         dispatch(setFilterDataValueComingFormBe(workflowDetail.filterColumnValues));
       }
     }
@@ -175,6 +174,8 @@ const DnDFlow = () => {
         return nodeDetails;
       });
 
+      console.log({ extractedValues });
+
       // check if start node is present
       if (extractedValues[0].type !== "Start") {
         toast.error("First node must be Start");
@@ -245,7 +246,6 @@ const DnDFlow = () => {
     updateWorkflow,
   ]);
 
-  // console.log({ filterDataValues }, "outside");
   const onEdgesChange = useCallback((changes) => {
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
@@ -266,9 +266,13 @@ const DnDFlow = () => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
+
+  // naviagte user to home page
   const navigateToBack = useCallback(() => {
     navigate("/");
   }, []);
+
+  // handle delete node
 
   const onNodeDelete = useCallback(
     (nodeId) => {
@@ -278,6 +282,7 @@ const DnDFlow = () => {
     [setNodes, setEdges]
   );
 
+  // handle click on node
   const onNodeClick = useCallback(
     (event, node) => {
       event.preventDefault(); // Optional: Prevent any default behavior
@@ -285,7 +290,16 @@ const DnDFlow = () => {
     },
     [onNodeDelete]
   );
-
+  // get lable for button
+  function getButtonLabel(isOnEditMode, isLoading, isUpdating) {
+    if (isLoading) {
+      return "Saving...";
+    } else if (isUpdating) {
+      return "Updating...";
+    } else {
+      return isOnEditMode ? "Update" : "Create";
+    }
+  }
   return (
     <section className="section">
       <div className="left-section">
@@ -337,7 +351,7 @@ const DnDFlow = () => {
           </ReactFlow>
         </div>
         <button className="button" onClick={saveWorkFlow}>
-          {isLoading ? "Saving..." : "Save"}
+          {getButtonLabel(isOnEditMode, isLoading, isUpdating)}
         </button>
       </div>
     </section>
