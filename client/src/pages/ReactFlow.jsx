@@ -137,45 +137,65 @@ const DnDFlow = () => {
         edges: reactFlowInstance.getEdges(),
       };
 
+      if (flow.edges.length < flow.nodes.length - 1) {
+        toast.error("Please add All nodes in the flow");
+        return;
+      }
+
+      const isEndIncludedInNode = flow.nodes.some((node) => node.data.label === "End");
+
+      if (!isEndIncludedInNode) {
+        toast.error("Please add End node in the flow");
+        return;
+      }
       // extract all source values
       const getAllSourceValues = flow.edges.map((edge) => edge.source);
 
       // find all nodes with same id
       const extractedValues = getAllSourceValues.map((id) => {
+        // find the element to same id which is present in the flow
         const element = flow.nodes.find((node) => node.id === id);
+
+        // defining node details
         const nodeDetails = { type: element.data.label };
-        // console.log({ element });
+
+        // check if element is filter data if it is then add filter value and return node details
         if (element.data.label === "Filter Data") {
           nodeDetails.filterValue = filterDataValues[id];
           return nodeDetails;
         }
         return nodeDetails;
       });
-      console.log({ extractedValues, filterDataValues });
-
-      // console.log({ extractedValues }, flow.nodes, "nodes", flow.edges, "edges");
 
       setIsLoading(true);
-      // console.log({ filterDataValues });
-      // We will build the workflow steps here
-      // const workFlowSteps = flow.nodes.map((node) => {
-      //   const nodeDetails = { type: node.data.label };
 
-      //   // Check if this node is a 'filterData' node and include its filter value
-      //   if (node.type === "Filter Data" && filterDataValues[node.id]) {
-      //     nodeDetails.filterValue = filterDataValues[node.id];
-      //   }
+      // check if start node is present
+      if (extractedValues[0].type !== "Start") {
+        toast.error("First node must be Start");
+        return;
+      }
 
-      //   return nodeDetails;
-      // });
+      /** check if more start node is present more than one time*/
+
+      if (extractedValues.filter((value) => value.type === "Start").length > 1) {
+        toast.error("Only one start node is allowed");
+        return;
+      }
+
+      /** check if last node is present more then one time */
+
+      if (extractedValues.filter((value) => value.type === "End").length > 1) {
+        toast.error("Only one end node is allowed");
+        return;
+      }
 
       // console.log({ workFlowSteps });
-      // mutateAsync({
-      //   workFlowSequence: [...extractedValues, "End"],
-      //   workFlowId: id,
-      // }).then(() => {
-      //   setIsLoading(false);
-      // });
+      mutateAsync({
+        workFlowSequence: [...extractedValues, "End"],
+        workFlowId: id,
+      }).then(() => {
+        setIsLoading(false);
+      });
     }
   }, [nodes, edges, id, reactFlowInstance, filterDataValues, mutateAsync, setIsLoading]);
 
