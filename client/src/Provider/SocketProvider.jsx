@@ -9,11 +9,21 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socketIo = io(SOCKET_URL);
+    // Establish connection once at the provider level
+    const socketIo = io(SOCKET_URL, { transports: ["websocket"] }); // Ensuring WebSocket transport
+
+    socketIo.on("connect", () => {
+      console.log("Connected to server via WebSocket");
+    });
+
+    socketIo.on("disconnect", () => {
+      console.log("Disconnected from server");
+    });
 
     setSocket(socketIo);
 
     return () => {
+      console.log("Disconnecting WebSocket");
       socketIo.disconnect();
     };
   }, []);

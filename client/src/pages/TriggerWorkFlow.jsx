@@ -18,18 +18,18 @@ const TriggerWorkFlow = () => {
   useEffect(() => {
     console.log(socket, "SOCKET", SOCKET_URL, "SOCKETURL");
     if (socket) {
-      socket.on("connect", () => {
-        console.log("Connected to server");
-      });
+      // socket.on("connect", () => {
+      //   console.log("Connected to server");
+      // });
 
       socket.on("workflowUpdate", (data) => {
         setStep(data.activeStep);
       });
 
-      return () => {
-        socket.off("connect");
-        socket.off("workflowUpdate");
-      };
+      // return () => {
+      //   socket.off("connect");
+      //   socket.off("workflowUpdate");
+      // };
     }
   }, [socket]);
 
