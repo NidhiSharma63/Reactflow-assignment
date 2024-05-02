@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyEdgeChanges, useEdgesState, useNodesState } from "reactflow";
@@ -39,15 +39,21 @@ let nodeTypes = {
 };
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
-  // const [filterDataValues, setFilterDataValues] = useState({});
   const { filterDataValues, setFilterDataValues } = useFilterData();
 
   // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const { mutateAsync } = useCreateWorkflow();
+  const { mutateAsync, error } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
+
+  /** if any error occured then set isLoading to false */
+  useEffect(() => {
+    if (error) {
+      setIsLoading(false);
+    }
+  }, [error]);
 
   // storing id in useMemo so it doesn't change on every render
   const id = useMemo(() => uuidv4(), []);
@@ -190,7 +196,7 @@ const DnDFlow = () => {
       }
 
       mutateAsync({
-        workFlowSequence: [...extractedValues, { type: "End" }, { type: "End" }],
+        workFlowSequence: [...extractedValues, { type: "End" }],
         workFlowId: id,
       }).then(() => {
         setIsLoading(false);
