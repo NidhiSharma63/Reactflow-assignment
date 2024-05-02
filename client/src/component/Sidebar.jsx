@@ -5,9 +5,7 @@ import { getAppData, setFilterDataValue } from "../redux/AppSlice";
 /** custom component for node */
 // memorized component
 const FilterDataComponent = ({ isSideBar = false, id }) => {
-  // const { filterDataValues, setFilterDataValues } = useFilterData();
   const { filterDataValues } = useSelector(getAppData);
-  console.log({ filterDataValues });
   const dispatch = useDispatch();
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
@@ -17,17 +15,11 @@ const FilterDataComponent = ({ isSideBar = false, id }) => {
   const handleChange = useCallback(
     (e) => {
       if (id) {
-        console.log("first");
-        // setFilterDataValues((prev) => {
-        //   return { ...prev, [id]: e.target.value };
-        // });
         dispatch(setFilterDataValue({ id, value: e.target.value }));
       }
     },
     [id, dispatch]
   );
-
-  console.log({ id });
 
   return (
     <>

@@ -1,9 +1,17 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGetWorkflows } from "src/hooks/useWorkflow";
+import { clearFilterDataValues } from "../redux/AppSlice";
+
 const Home = () => {
   const { data, isPending } = useGetWorkflows();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(clearFilterDataValues());
+  }, []);
 
   // navigate user to create workflow page
   const handleClickOnCreateWorkflow = useCallback(() => {
