@@ -136,6 +136,8 @@ input:focus {
   background-color: #272828;
   padding: 30px;
   border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
 }
 /* Width and height for the scrollbar itself */
 ::-webkit-scrollbar {
@@ -287,4 +289,10 @@ select:focus {
   width: 250px;
   color: white;
   /* height: 4rem; */
+}
+
+.button.edit {
+  background-color: transparent;
+  padding: 10px 20px;
+  border: 1px solid white;
 }

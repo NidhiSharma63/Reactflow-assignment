@@ -80,7 +80,7 @@ const Home = () => {
                         Workflow Id:
                         {workflow}
                       </p>
-                      <button className="button" onClick={() => handleClick(workflow)}>
+                      <button className="button edit" onClick={() => handleClick(workflow)}>
                         Edit
                       </button>
                     </div>
