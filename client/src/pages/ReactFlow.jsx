@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyEdgeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
-import { useCreateWorkflow } from "src/hooks/useWorkflow";
+import { useCreateWorkflow, useGetWorkFlowDetails, useUpdateWorkflow } from "src/hooks/useWorkflow";
 import { v4 as uuidv4 } from "uuid";
 import {
   ConvertFormatComponent,
@@ -14,18 +14,7 @@ import {
 } from "../component/Sidebar";
 import { getAppData, setFilterDataValue } from "../redux/AppSlice";
 
-// const createFilterDataComponent = (props) => {
-//   return function FilterDataComponentWrapper(nodeProps) {
-//     return <FilterDataComponent {...props} {...nodeProps} />;
-//   };
-// };
-
 const initialNodes = [];
-
-// Memoize the individual components outside the main component
-// const FilterDataNode = React.memo(({ data, id, onChange, isSideBar }) => (
-//   <FilterDataComponent data={data} id={id} onChange={onChange} isSideBar={isSideBar} />
-// ));
 
 // Keep other components static if they do not depend on external states
 const SendPostRequestComponentStatic = React.memo(SendPostRequestComponent);
@@ -40,16 +29,27 @@ let nodeTypes = {
 };
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
-  // const { filterDataValues, setFilterDataValues } = useFilterData();
-  const { filterDataValues } = useSelector(getAppData);
+  const { filterDataValues, isOnEditMode, workflowId } = useSelector(getAppData);
   const dispatch = useDispatch();
-
+  const { data: workflowDetail } = useGetWorkFlowDetails(isOnEditMode ? workflowId : null);
+  const { mutateAsync: updateWorkflow } = useUpdateWorkflow();
   // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const { mutateAsync, error } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    console.log(isOnEditMode, workflowDetail);
+    if (isOnEditMode) {
+      if (workflowDetail) {
+        setEdges(workflowDetail.workFlowEdges);
+        setNodes(workflowDetail.workFlowNodes);
+        console.log("i run");
+      }
+    }
+  }, [isOnEditMode, workflowDetail]);
 
   /** if any error occured then set isLoading to false */
   useEffect(() => {
@@ -137,6 +137,7 @@ const DnDFlow = () => {
     [reactFlowInstance]
   );
 
+  console.log(nodes, "nodes");
   const saveWorkFlow = useCallback(() => {
     if (reactFlowInstance) {
       const flow = {
@@ -206,15 +207,40 @@ const DnDFlow = () => {
           }
         }
       }
+
       setIsLoading(true);
-      mutateAsync({
-        workFlowSequence: [...extractedValues, { type: "End" }],
-        workFlowId: id,
-      }).then(() => {
-        setIsLoading(false);
-      });
+      if (isOnEditMode) {
+        updateWorkflow({
+          workFlowSequence: [...extractedValues, { type: "End" }],
+          workFlowId: workflowId,
+          workFlowEdges: flow.edges,
+          workFlowNodes: flow.nodes,
+        }).then(() => {
+          setIsLoading(false);
+        });
+      } else {
+        mutateAsync({
+          workFlowSequence: [...extractedValues, { type: "End" }],
+          workFlowId: id,
+          workFlowEdges: flow.edges,
+          workFlowNodes: flow.nodes,
+        }).then(() => {
+          setIsLoading(false);
+        });
+      }
     }
-  }, [nodes, edges, id, reactFlowInstance, filterDataValues, mutateAsync, setIsLoading]);
+  }, [
+    nodes,
+    isOnEditMode,
+    edges,
+    id,
+    workflowId,
+    reactFlowInstance,
+    filterDataValues,
+    mutateAsync,
+    setIsLoading,
+    updateWorkflow,
+  ]);
 
   // console.log({ filterDataValues }, "outside");
   const onEdgesChange = useCallback((changes) => {

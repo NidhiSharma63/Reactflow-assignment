@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   filterDataValues: {},
+  isOnEditMode: false,
+  workflowId: null,
 };
 
 const appDataSlice = createSlice({
@@ -15,10 +17,16 @@ const appDataSlice = createSlice({
     clearFilterDataValues: (state) => {
       state.filterDataValues = {};
     },
+    setIsOnEditMode: (state, action) => {
+      state.isOnEditMode = action.payload;
+    },
+    setWorkflowId: (state, action) => {
+      state.workflowId = action.payload;
+    },
   },
 });
 
-export const { setFilterDataValue, clearFilterDataValues } = appDataSlice.actions;
+export const { setFilterDataValue, clearFilterDataValues, setIsOnEditMode, setWorkflowId } = appDataSlice.actions;
 
 // add a function to access store
 

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGetWorkflows } from "src/hooks/useWorkflow";
-import { clearFilterDataValues } from "../redux/AppSlice";
+import { clearFilterDataValues, setIsOnEditMode, setWorkflowId } from "../redux/AppSlice";
 
 const Home = () => {
   const { data, isPending } = useGetWorkflows();
@@ -21,6 +21,12 @@ const Home = () => {
   // navigate user to trigger workflow
   const handleNavigateToTriggerWorkflow = useCallback(() => {
     navigate("/trigger-workflow");
+  }, []);
+
+  const handleClick = useCallback((id) => {
+    navigate("/workflow");
+    dispatch(setIsOnEditMode(true));
+    dispatch(setWorkflowId(id));
   }, []);
   return (
     <section className="section">
@@ -72,6 +78,9 @@ const Home = () => {
                         Workflow Id:
                         {workflow}
                       </p>
+                      <button className="button" onClick={() => handleClick(workflow)}>
+                        Edit
+                      </button>
                     </div>
                   );
                 })}
