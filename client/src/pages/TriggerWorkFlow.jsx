@@ -76,14 +76,12 @@ const TriggerWorkFlow = () => {
         <div className="workflow-container ">
           {isPending ? (
             <>
-              {
-                <div className="center">
-                  <div className="loader"></div>
-                  <p>
-                    Step <strong>{step}</strong> is in progress
-                  </p>
-                </div>
-              }
+              <div className="center">
+                <div className="loader"></div>
+                <p>
+                  Step <strong>{step}</strong> is in progress
+                </p>
+              </div>
             </>
           ) : isWorkedFlowTriggerred ? (
             <div className="center">

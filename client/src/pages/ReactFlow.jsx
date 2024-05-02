@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyEdgeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
 import { useCreateWorkflow } from "src/hooks/useWorkflow";
 import { v4 as uuidv4 } from "uuid";
-import { useFilterData } from "../Provider/FilterDataProvider";
 import {
   ConvertFormatComponent,
   FilterDataComponent,
   SendPostRequestComponent,
   WaitComponent,
 } from "../component/Sidebar";
+import { getAppData, setFilterDataValue } from "../redux/AppSlice";
 
 // const createFilterDataComponent = (props) => {
 //   return function FilterDataComponentWrapper(nodeProps) {
@@ -39,7 +40,9 @@ let nodeTypes = {
 };
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
-  const { filterDataValues, setFilterDataValues } = useFilterData();
+  // const { filterDataValues, setFilterDataValues } = useFilterData();
+  const { filterDataValues } = useSelector(getAppData);
+  const dispatch = useDispatch();
 
   // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -125,11 +128,9 @@ const DnDFlow = () => {
         data: { label: `${type === "input" ? "Start" : type === "output" ? "End" : type}` },
       };
 
+      let nodeId = newNode.id;
       if (type === "Filter Data") {
-        setFilterDataValues((prevValues) => ({
-          ...prevValues,
-          [newNode.id]: "", // Initialize with an empty string or any default value
-        }));
+        dispatch(setFilterDataValue({ id: nodeId, value: "" }));
       }
       setNodes((nds) => nds.concat(newNode));
     },
@@ -173,8 +174,6 @@ const DnDFlow = () => {
         return nodeDetails;
       });
 
-      setIsLoading(true);
-
       // check if start node is present
       if (extractedValues[0].type !== "Start") {
         toast.error("First node must be Start");
@@ -195,6 +194,19 @@ const DnDFlow = () => {
         return;
       }
 
+      // check is any filter data node is missing filter value
+      const isFilterDataNodeIncluded = extractedValues.filter((node) => node.type === "Filter Data");
+      // check if every filterData node has filterValue field and it is filled
+
+      if (isFilterDataNodeIncluded.length > 0) {
+        for (const node of isFilterDataNodeIncluded) {
+          if (!node.filterValue) {
+            toast.error("Filter Value is Missing for Filter Data Node");
+            return;
+          }
+        }
+      }
+      setIsLoading(true);
       mutateAsync({
         workFlowSequence: [...extractedValues, { type: "End" }],
         workFlowId: id,

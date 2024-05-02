@@ -1,11 +1,14 @@
 import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Handle, Position } from "reactflow";
-import { useFilterData } from "../Provider/FilterDataProvider";
-
+import { getAppData, setFilterDataValue } from "../redux/AppSlice";
 /** custom component for node */
 // memorized component
 const FilterDataComponent = ({ isSideBar = false, id }) => {
-  const { filterDataValues, setFilterDataValues } = useFilterData();
+  // const { filterDataValues, setFilterDataValues } = useFilterData();
+  const { filterDataValues } = useSelector(getAppData);
+  console.log({ filterDataValues });
+  const dispatch = useDispatch();
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
@@ -15,13 +18,16 @@ const FilterDataComponent = ({ isSideBar = false, id }) => {
     (e) => {
       if (id) {
         console.log("first");
-        setFilterDataValues((prev) => {
-          return { ...prev, [id]: e.target.value };
-        });
+        // setFilterDataValues((prev) => {
+        //   return { ...prev, [id]: e.target.value };
+        // });
+        dispatch(setFilterDataValue({ id, value: e.target.value }));
       }
     },
-    [id, setFilterDataValues]
+    [id, dispatch]
   );
+
+  console.log({ id });
 
   return (
     <>
