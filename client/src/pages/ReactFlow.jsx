@@ -189,9 +189,8 @@ const DnDFlow = () => {
         return;
       }
 
-      // console.log({ workFlowSteps });
       mutateAsync({
-        workFlowSequence: [...extractedValues, "End"],
+        workFlowSequence: [...extractedValues, { type: "End" }, { type: "End" }],
         workFlowId: id,
       }).then(() => {
         setIsLoading(false);
