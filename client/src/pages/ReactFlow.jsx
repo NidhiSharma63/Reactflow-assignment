@@ -12,12 +12,12 @@ import {
   WaitComponent,
 } from "../component/Sidebar";
 
-let nodeType = {
-  "Filter Data": FilterDataComponent,
-  "Send Post Request": SendPostRequestComponent,
-  Wait: WaitComponent,
-  "Convert Format": ConvertFormatComponent,
+const createFilterDataComponent = (props) => {
+  return function FilterDataComponentWrapper(nodeProps) {
+    return <FilterDataComponent {...props} {...nodeProps} />;
+  };
 };
+
 const initialNodes = [];
 
 let id = 0;
@@ -25,6 +25,7 @@ const getId = () => `${id++}`;
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
+  const [filterDataValues, setFilterDataValues] = useState({});
 
   // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -103,6 +104,9 @@ const DnDFlow = () => {
         data: { label: `${type === "input" ? "Start" : type === "output" ? "End" : type}` },
       };
 
+      if (type === "Filter Data") {
+        setFilterDataValues({ ...filterDataValues, [newNode.id]: "" });
+      }
       setNodes((nds) => nds.concat(newNode));
     },
     [reactFlowInstance]
@@ -165,14 +169,15 @@ const DnDFlow = () => {
       }
 
       setIsLoading(true);
-      mutateAsync({
-        workFlowSequence: [...extractedValues, "End"],
-        workFlowId: id,
-      }).then(() => {
-        setIsLoading(false);
-      });
+      console.log({ filterDataValues });
+      // mutateAsync({
+      //   workFlowSequence: [...extractedValues, "End"],
+      //   workFlowId: id,
+      // }).then(() => {
+      //   setIsLoading(false);
+      // });
     }
-  }, [nodes, edges, id, reactFlowInstance]);
+  }, [nodes, edges, id, reactFlowInstance, filterDataValues]);
 
   const onEdgesChange = useCallback((changes) => {
     setEdges((eds) => applyEdgeChanges(changes, eds));
@@ -213,6 +218,21 @@ const DnDFlow = () => {
     },
     [onNodeDelete]
   );
+
+  const nodeType = useMemo(
+    () => ({
+      "Filter Data": createFilterDataComponent({
+        isSideBar: false,
+        setFilterDataValues: setFilterDataValues,
+        filterDataValues: filterDataValues,
+      }),
+      "Send Post Request": SendPostRequestComponent,
+      Wait: WaitComponent,
+      "Convert Format": ConvertFormatComponent,
+    }),
+    []
+  );
+
   return (
     <section className="section">
       <div className="left-section">
@@ -228,7 +248,11 @@ const DnDFlow = () => {
             }}>
             Start
           </div>
-          <FilterDataComponent nodes={nodes} isSideBar={true} />
+          <FilterDataComponent
+            isSideBar={true}
+            setFilterDataValues={setFilterDataValues}
+            filterDataValues={filterDataValues}
+          />
           <SendPostRequestComponent />
           <ConvertFormatComponent />
           <WaitComponent />

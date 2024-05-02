@@ -1,25 +1,40 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Handle, Position } from "reactflow";
 
 /** custom component for node */
-const FilterDataComponent = ({ nodes, isSideBar = false }) => {
+const FilterDataComponent = ({ isSideBar = false, setFilterDataValues, filterDataValues, id }) => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
+
+  if (!isSideBar) {
+    console.log({ isSideBar, setFilterDataValues, filterDataValues, id });
+  }
+
+  const handleChange = useCallback(
+    (e) => {
+      if (id) {
+        // setFilterDataValues({ ...filterDataValues, [id]: e.target.value });
+        setFilterDataValues((prev) => {
+          return { ...prev, [id]: e.target.value };
+        });
+      }
+    },
+    [id]
+  );
   return (
     <>
       <div className="dndnode Filter Data" onDragStart={(event) => onDragStart(event, "Filter Data")} draggable>
         Filter Data
       </div>
-
       {!isSideBar && (
         <input
+          onChange={handleChange}
           onClick={(e) => e.stopPropagation()}
           className="filter-input"
-          type="text"
-          placeholder="Enter a column to filter the data"
-          style={{ marginTop: 5 }}
+          placeholder="Add column name to filter data"
+          value={filterDataValues[id]}
         />
       )}
       <Handle type="target" position={Position.Top} />
