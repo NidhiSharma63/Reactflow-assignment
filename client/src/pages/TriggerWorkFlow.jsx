@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGetWorkflows, useTriggerWorkFlow } from "src/hooks/useWorkflow";
 import { useSocket } from "../Provider/SocketProvider";
+import { SOCKET_URL } from "../utils/constant";
 const TriggerWorkFlow = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [workflowId, setWorkflowId] = useState(null);
@@ -15,6 +16,7 @@ const TriggerWorkFlow = () => {
 
   //  setup a connection between server and client
   useEffect(() => {
+    console.log(socket, "SOCKET", SOCKET_URL, "SOCKETURL");
     if (socket) {
       socket.on("connect", () => {
         console.log("Connected to server");
