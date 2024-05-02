@@ -305,7 +305,7 @@ const DnDFlow = () => {
       <div className="left-section">
         <h1 onClick={navigateToBack}>WorkFlow Creator</h1>
         <div className="nodes-container">
-          <p>WorkFlow id - {id}</p>
+          <p>WorkFlow id - {isOnEditMode ? workflowId : id}</p>
           <div
             className="dndnode start"
             onDragStart={(event) => onDragStart(event, "input")}
