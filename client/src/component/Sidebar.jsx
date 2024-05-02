@@ -21,7 +21,6 @@ const FilterDataComponent = ({ isSideBar = false, id }) => {
     [id, dispatch]
   );
 
-  console.log({ filterDataValues });
   return (
     <>
       <div className="dndnode Filter Data" onDragStart={(event) => onDragStart(event, "Filter Data")} draggable>

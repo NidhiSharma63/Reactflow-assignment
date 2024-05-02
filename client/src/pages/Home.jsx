@@ -16,6 +16,8 @@ const Home = () => {
   // navigate user to create workflow page
   const handleClickOnCreateWorkflow = useCallback(() => {
     navigate("/workflow");
+    dispatch(setIsOnEditMode(false));
+    dispatch(setWorkflowId(null));
   }, []);
 
   // navigate user to trigger workflow
