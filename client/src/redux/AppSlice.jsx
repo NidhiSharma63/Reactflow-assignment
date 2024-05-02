@@ -23,10 +23,19 @@ const appDataSlice = createSlice({
     setWorkflowId: (state, action) => {
       state.workflowId = action.payload;
     },
+    setFilterDataValueComingFormBe: (state, action) => {
+      state.filterDataValues = action.payload;
+    },
   },
 });
 
-export const { setFilterDataValue, clearFilterDataValues, setIsOnEditMode, setWorkflowId } = appDataSlice.actions;
+export const {
+  setFilterDataValue,
+  setFilterDataValueComingFormBe,
+  clearFilterDataValues,
+  setIsOnEditMode,
+  setWorkflowId,
+} = appDataSlice.actions;
 
 // add a function to access store
 

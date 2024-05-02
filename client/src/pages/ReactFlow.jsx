@@ -12,7 +12,7 @@ import {
   SendPostRequestComponent,
   WaitComponent,
 } from "../component/Sidebar";
-import { getAppData, setFilterDataValue } from "../redux/AppSlice";
+import { getAppData, setFilterDataValue, setFilterDataValueComingFormBe } from "../redux/AppSlice";
 
 const initialNodes = [];
 
@@ -40,13 +40,14 @@ const DnDFlow = () => {
   const { mutateAsync, error } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
 
+  /** check if it is in edit mode - if it is then set the values */
   useEffect(() => {
-    console.log(isOnEditMode, workflowDetail);
     if (isOnEditMode) {
       if (workflowDetail) {
         setEdges(workflowDetail.workFlowEdges);
         setNodes(workflowDetail.workFlowNodes);
-        console.log("i run");
+        console.log(workflowDetail.filterColumnValues, "hel");
+        dispatch(setFilterDataValueComingFormBe(workflowDetail.filterColumnValues));
       }
     }
   }, [isOnEditMode, workflowDetail]);
@@ -137,7 +138,6 @@ const DnDFlow = () => {
     [reactFlowInstance]
   );
 
-  console.log(nodes, "nodes");
   const saveWorkFlow = useCallback(() => {
     if (reactFlowInstance) {
       const flow = {
@@ -209,12 +209,14 @@ const DnDFlow = () => {
       }
 
       setIsLoading(true);
+      // console.log({ filterDataValues });
       if (isOnEditMode) {
         updateWorkflow({
           workFlowSequence: [...extractedValues, { type: "End" }],
           workFlowId: workflowId,
           workFlowEdges: flow.edges,
           workFlowNodes: flow.nodes,
+          filterColumnValues: filterDataValues,
         }).then(() => {
           setIsLoading(false);
         });
@@ -224,6 +226,7 @@ const DnDFlow = () => {
           workFlowId: id,
           workFlowEdges: flow.edges,
           workFlowNodes: flow.nodes,
+          filterColumnValues: filterDataValues,
         }).then(() => {
           setIsLoading(false);
         });
@@ -342,28 +345,3 @@ const DnDFlow = () => {
 };
 
 export default DnDFlow;
-// check if start node is present
-//  if (extractedValues[0] !== "Start") {
-//   toast.error("First node must be Start");
-//   return;
-// }
-
-// /** check if more start node is present more than one time*/
-
-// if (extractedValues.filter((value) => value === "Start").length > 1) {
-//   toast.error("Only one start node is allowed");
-//   return;
-// }
-
-// /** check if last node is present more then one time */
-
-// if (extractedValues.filter((value) => value === "End").length > 1) {
-//   toast.error("Only one end node is allowed");
-//   return;
-// }
-
-// /** check if end node is present */
-// if (extractedValues.includes("End")) {
-//   toast.error("Last node must be End");
-//   return;
-// }
