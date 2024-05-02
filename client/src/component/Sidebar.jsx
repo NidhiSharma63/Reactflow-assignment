@@ -1,29 +1,51 @@
-import React from "react";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Handle, Position } from "reactflow";
-
-const FilterDataComponent = ({ nodes }) => {
+import { getAppData, setFilterDataValue } from "../redux/AppSlice";
+/** custom component for node */
+// memorized component
+const FilterDataComponent = ({ isSideBar = false, id }) => {
+  const { filterDataValues } = useSelector(getAppData);
+  const dispatch = useDispatch();
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
+
+  const handleChange = useCallback(
+    (e) => {
+      if (id) {
+        dispatch(setFilterDataValue({ id, value: e.target.value }));
+      }
+    },
+    [id, dispatch]
+  );
+
   return (
     <>
-      <div
-        className="dndnode Filter Data"
-        onDragStart={(event) => onDragStart(event, "Filter Data")}
-        draggable={nodes?.some((node) => node.type === "Filter Data") ? false : true}
-        style={{
-          opacity: nodes?.some((node) => node.type === "Filter Data") ? ".2" : "1",
-        }}>
+      <div className="dndnode Filter Data" onDragStart={(event) => onDragStart(event, "Filter Data")} draggable>
         Filter Data
       </div>
+      {!isSideBar && (
+        <input
+          onChange={handleChange}
+          onClick={(e) => e.stopPropagation()}
+          className="filter-input"
+          placeholder="Add column name to filter data"
+          value={filterDataValues[id]}
+        />
+      )}
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />
     </>
   );
 };
 
-const SendPostRequestComponent = ({ nodes }) => {
+// const FilterDataComponent = ({ isSideBar = false, setFilterDataValues, filterDataValues, id }) => {
+
+// };
+
+const SendPostRequestComponent = () => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
@@ -33,10 +55,7 @@ const SendPostRequestComponent = ({ nodes }) => {
       <div
         className="dndnode Send Post Request"
         onDragStart={(event) => onDragStart(event, "Send Post Request")}
-        draggable={nodes?.some((node) => node.type === "Send Post Request") ? false : true}
-        style={{
-          opacity: nodes?.some((node) => node.type === "Send Post Request") ? ".2" : "1",
-        }}>
+        draggable>
         Send Post Request
       </div>
       <Handle type="target" position={Position.Top} />
@@ -45,18 +64,14 @@ const SendPostRequestComponent = ({ nodes }) => {
   );
 };
 
-const ConvertFormatComponent = ({ nodes }) => {
+const ConvertFormatComponent = () => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
   return (
     <>
-      <div
-        className="dndnode Convert Format"
-        onDragStart={(event) => onDragStart(event, "Convert Format")}
-        draggable={nodes?.some((node) => node.type === "Convert Format") ? false : true}
-        style={{ opacity: nodes?.some((node) => node.type === "Convert Format") ? ".2" : "1" }}>
+      <div className="dndnode Convert Format" onDragStart={(event) => onDragStart(event, "Convert Format")} draggable>
         Convert Format
       </div>
       <Handle type="target" position={Position.Top} />
@@ -65,18 +80,14 @@ const ConvertFormatComponent = ({ nodes }) => {
   );
 };
 
-const WaitComponent = ({ nodes }) => {
+const WaitComponent = () => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
   return (
     <>
-      <div
-        className="dndnode Wait"
-        onDragStart={(event) => onDragStart(event, "Wait")}
-        draggable={nodes?.some((node) => node.type === "Wait") ? false : true}
-        style={{ opacity: nodes?.some((node) => node.type === "Wait") ? ".2" : "1" }}>
+      <div className="dndnode Wait" onDragStart={(event) => onDragStart(event, "Wait")} draggable>
         Wait
       </div>
       <Handle type="target" position={Position.Top} />

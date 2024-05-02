@@ -60,4 +60,37 @@ const useGetWorkflowStatus = ({ enabled }) => {
   });
 };
 
-export { useCreateWorkflow, useGetWorkflowStatus, useGetWorkflows, useTriggerWorkFlow };
+const useGetWorkFlowDetails = (id) => {
+  return useQuery({
+    queryKey: ["workflow-details", id],
+    enabled: id ? true : false,
+    queryFn: () => customAxiosRequestForGet("/workflow-details", { workFlowId: id }),
+  });
+};
+
+// update workflow
+const useUpdateWorkflow = (id) => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: (payload) => {
+      return customAxiosRequestForPost("/update-workflow", "post", payload);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["workflowsIds"] });
+      navigate("/");
+    },
+    onError: (error) => {
+      // console.log({ error }, error);
+      toast.error(error?.response?.data?.toString());
+    },
+  });
+};
+
+export {
+  useCreateWorkflow,
+  useGetWorkFlowDetails,
+  useGetWorkflowStatus,
+  useGetWorkflows,
+  useTriggerWorkFlow,
+  useUpdateWorkflow,
+};

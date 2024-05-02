@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 import { Navigate, RouterProvider, createBrowserRouter, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,6 +14,7 @@ import { getValueFromLS } from "src/utils/LocalStorage";
 import { KEY_FOR_STORING_USER_DETAILS } from "src/utils/LocalStoragekey";
 import "./App.css";
 import { SocketProvider } from "./Provider/SocketProvider";
+import store from "./store";
 
 export const queryClient = new QueryClient();
 const RequiredAuth = ({ children }) => {
@@ -48,10 +50,7 @@ const router = createBrowserRouter([
     element: (
       <RequiredAuth>
         {" "}
-        {/* <SocketProvider> */}
-        <ReactFlowProvider>
-          <ReactWorkFlowComponent />
-        </ReactFlowProvider>
+        <ReactWorkFlowComponent />
         {/* </SocketProvider> */}
       </RequiredAuth>
     ),
@@ -60,10 +59,7 @@ const router = createBrowserRouter([
     path: "/trigger-workflow",
     element: (
       <RequiredAuth>
-        {" "}
-        <SocketProvider>
-          <TriggerWorkFlow />
-        </SocketProvider>
+        <TriggerWorkFlow />
       </RequiredAuth>
     ),
   },
@@ -80,6 +76,14 @@ function App() {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ToastContainer />
-    <App />
+    <SocketProvider>
+      {/* <FilterDataProvider> */}
+      <Provider store={store}>
+        <ReactFlowProvider>
+          <App />
+        </ReactFlowProvider>
+      </Provider>
+      {/* </FilterDataProvider> */}
+    </SocketProvider>
   </React.StrictMode>
 );

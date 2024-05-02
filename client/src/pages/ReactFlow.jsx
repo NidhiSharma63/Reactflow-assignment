@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactFlow, { Controls, addEdge, applyEdgeChanges, useEdgesState, useNodesState } from "reactflow";
 import "reactflow/dist/style.css";
-import { useCreateWorkflow } from "src/hooks/useWorkflow";
+import { useCreateWorkflow, useGetWorkFlowDetails, useUpdateWorkflow } from "src/hooks/useWorkflow";
 import { v4 as uuidv4 } from "uuid";
 import {
   ConvertFormatComponent,
@@ -11,31 +12,60 @@ import {
   SendPostRequestComponent,
   WaitComponent,
 } from "../component/Sidebar";
+import { getAppData, setFilterDataValue, setFilterDataValueComingFormBe } from "../redux/AppSlice";
 
-let nodeType = {
-  "Filter Data": FilterDataComponent,
-  "Send Post Request": SendPostRequestComponent,
-  Wait: WaitComponent,
-  "Convert Format": ConvertFormatComponent,
-};
 const initialNodes = [];
 
-let id = 0;
-const getId = () => `${id++}`;
+// Keep other components static if they do not depend on external states
+const SendPostRequestComponentStatic = React.memo(SendPostRequestComponent);
+const WaitComponentStatic = React.memo(WaitComponent);
+const ConvertFormatComponentStatic = React.memo(ConvertFormatComponent);
 
+let nodeTypes = {
+  "Send Post Request": SendPostRequestComponentStatic,
+  Wait: WaitComponentStatic,
+  "Convert Format": ConvertFormatComponentStatic,
+  "Filter Data": FilterDataComponent,
+};
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
+  const { filterDataValues, isOnEditMode, workflowId } = useSelector(getAppData);
+  const dispatch = useDispatch();
+  const { data: workflowDetail } = useGetWorkFlowDetails(isOnEditMode ? workflowId : null);
+  const { mutateAsync: updateWorkflow, isPending: isUpdating } = useUpdateWorkflow();
+  // define the initial nodes
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const { mutateAsync, error } = useCreateWorkflow();
   const [isLoading, setIsLoading] = useState(false);
+
+  /** check if it is in edit mode - if it is then set the values */
+  useEffect(() => {
+    if (isOnEditMode) {
+      if (workflowDetail) {
+        setEdges(workflowDetail.workFlowEdges);
+        setNodes(workflowDetail.workFlowNodes);
+        dispatch(setFilterDataValueComingFormBe(workflowDetail.filterColumnValues));
+      }
+    }
+  }, [isOnEditMode, workflowDetail]);
+
+  /** if any error occured then set isLoading to false */
+  useEffect(() => {
+    if (error) {
+      setIsLoading(false);
+    }
+  }, [error]);
+
+  // storing id in useMemo so it doesn't change on every render
   const id = useMemo(() => uuidv4(), []);
 
   const navigate = useNavigate();
 
   const onConnect = useCallback(
     (params) => {
+      // Check if the edge already exists (Rule 1)
       const invalidConnection = edges.some((edge) => {
         return edge.source === params.target && edge.target === params.source;
       });
@@ -43,20 +73,21 @@ const DnDFlow = () => {
         toast.error("Invalid Connection");
         return;
       }
-      // Check that source and target nodes are not the same (Rule 1)
+
+      // if user trying to connect a node to itself do throw an error (Rule 2)
       if (params.source === params.target) {
         toast.error("Cannot connect a node to itself.");
         return;
       }
 
-      // Check if the source node already has an outgoing connection (Rule 2)
+      // Check if the source node already has an outgoing connection (Rule 3)
       const sourceHasOutgoingConnection = edges.some((edge) => edge.source === params.source);
       if (sourceHasOutgoingConnection) {
         toast.error("This node already has an outgoing connection.");
         return;
       }
 
-      // Check if the target node already has an incoming connection (Rule 3)
+      // Check if the target node already has an incoming connection (Rule 4)
       const targetHasIncomingConnection = edges.some((edge) => edge.target === params.target);
       if (targetHasIncomingConnection) {
         toast.error("This node already has an incoming connection.");
@@ -88,13 +119,19 @@ const DnDFlow = () => {
         x: event.clientX,
         y: event.clientY,
       });
+
+      // create new node on drop
       const newNode = {
-        id: getId(),
+        id: uuidv4(),
         type,
         position,
-        data: { label: `${type === "input" ? "begin" : type === "output" ? "End" : type}` },
+        data: { label: `${type === "input" ? "Start" : type === "output" ? "End" : type}` },
       };
 
+      let nodeId = newNode.id;
+      if (type === "Filter Data") {
+        dispatch(setFilterDataValue({ id: nodeId, value: "" }));
+      }
       setNodes((nds) => nds.concat(newNode));
     },
     [reactFlowInstance]
@@ -106,7 +143,6 @@ const DnDFlow = () => {
         nodes: reactFlowInstance.getNodes(),
         edges: reactFlowInstance.getEdges(),
       };
-      // console.log(flow);
 
       if (flow.edges.length < flow.nodes.length - 1) {
         toast.error("Please add All nodes in the flow");
@@ -119,33 +155,96 @@ const DnDFlow = () => {
         toast.error("Please add End node in the flow");
         return;
       }
+      // extract all source values
       const getAllSourceValues = flow.edges.map((edge) => edge.source);
-      const extractedValues = getAllSourceValues.map((index) => {
-        const indexNumber = +index;
-        // const el = flow.nodes[indexNumber];
-        // console.log(indexNumber, flow.nodes);
-        // console.log({ el });
-        return flow.nodes[indexNumber].data.label;
+
+      // find all nodes with same id
+      const extractedValues = getAllSourceValues.map((id) => {
+        // find the element to same id which is present in the flow
+        const element = flow.nodes.find((node) => node.id === id);
+
+        // defining node details
+        const nodeDetails = { type: element.data.label };
+
+        // check if element is filter data if it is then add filter value and return node details
+        if (element.data.label === "Filter Data") {
+          nodeDetails.filterValue = filterDataValues[id];
+          return nodeDetails;
+        }
+        return nodeDetails;
       });
-      if (extractedValues[0] !== "begin") {
-        toast.error("First node must be begin");
+
+      console.log({ extractedValues });
+
+      // check if start node is present
+      if (extractedValues[0].type !== "Start") {
+        toast.error("First node must be Start");
         return;
       }
 
-      if (extractedValues.includes("End")) {
-        toast.error("Last node must be End");
+      /** check if more start node is present more than one time*/
+
+      if (extractedValues.filter((value) => value.type === "Start").length > 1) {
+        toast.error("Only one start node is allowed");
         return;
+      }
+
+      /** check if last node is present more then one time */
+
+      if (extractedValues.filter((value) => value.type === "End").length > 1) {
+        toast.error("Only one end node is allowed");
+        return;
+      }
+
+      // check is any filter data node is missing filter value
+      const isFilterDataNodeIncluded = extractedValues.filter((node) => node.type === "Filter Data");
+      // check if every filterData node has filterValue field and it is filled
+
+      if (isFilterDataNodeIncluded.length > 0) {
+        for (const node of isFilterDataNodeIncluded) {
+          if (!node.filterValue) {
+            toast.error("Filter Value is Missing for Filter Data Node");
+            return;
+          }
+        }
       }
 
       setIsLoading(true);
-      mutateAsync({
-        workFlowSequence: [...extractedValues, "End"],
-        workFlowId: id,
-      }).then(() => {
-        setIsLoading(false);
-      });
+      // console.log({ filterDataValues });
+      if (isOnEditMode) {
+        updateWorkflow({
+          workFlowSequence: [...extractedValues, { type: "End" }],
+          workFlowId: workflowId,
+          workFlowEdges: flow.edges,
+          workFlowNodes: flow.nodes,
+          filterColumnValues: filterDataValues,
+        }).then(() => {
+          setIsLoading(false);
+        });
+      } else {
+        mutateAsync({
+          workFlowSequence: [...extractedValues, { type: "End" }],
+          workFlowId: id,
+          workFlowEdges: flow.edges,
+          workFlowNodes: flow.nodes,
+          filterColumnValues: filterDataValues,
+        }).then(() => {
+          setIsLoading(false);
+        });
+      }
     }
-  }, [nodes, edges, id, reactFlowInstance]);
+  }, [
+    nodes,
+    isOnEditMode,
+    edges,
+    id,
+    workflowId,
+    reactFlowInstance,
+    filterDataValues,
+    mutateAsync,
+    setIsLoading,
+    updateWorkflow,
+  ]);
 
   const onEdgesChange = useCallback((changes) => {
     setEdges((eds) => applyEdgeChanges(changes, eds));
@@ -167,15 +266,46 @@ const DnDFlow = () => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
+
+  // naviagte user to home page
   const navigateToBack = useCallback(() => {
     navigate("/");
   }, []);
+
+  // handle delete node
+
+  const onNodeDelete = useCallback(
+    (nodeId) => {
+      setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+      setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+    },
+    [setNodes, setEdges]
+  );
+
+  // handle click on node
+  const onNodeClick = useCallback(
+    (event, node) => {
+      event.preventDefault(); // Optional: Prevent any default behavior
+      onNodeDelete(node.id); // Deletes the node and its connected edges
+    },
+    [onNodeDelete]
+  );
+  // get lable for button
+  function getButtonLabel(isOnEditMode, isLoading, isUpdating) {
+    if (isLoading) {
+      return "Saving...";
+    } else if (isUpdating) {
+      return "Updating...";
+    } else {
+      return isOnEditMode ? "Update" : "Create";
+    }
+  }
   return (
     <section className="section">
       <div className="left-section">
         <h1 onClick={navigateToBack}>WorkFlow Creator</h1>
         <div className="nodes-container">
-          <p>WorkFlow id - {id}</p>
+          <p>WorkFlow id - {isOnEditMode ? workflowId : id}</p>
           <div
             className="dndnode start"
             onDragStart={(event) => onDragStart(event, "input")}
@@ -183,12 +313,12 @@ const DnDFlow = () => {
             style={{
               opacity: nodes.some((node) => node.type === "input") ? ".2" : "1",
             }}>
-            Begin
+            Start
           </div>
-          <FilterDataComponent nodes={nodes} />
-          <SendPostRequestComponent nodes={nodes} />
-          <ConvertFormatComponent nodes={nodes} />
-          <WaitComponent nodes={nodes} />
+          <FilterDataComponent isSideBar={true} />
+          <SendPostRequestComponent />
+          <ConvertFormatComponent />
+          <WaitComponent />
           <div
             className="dndnode output"
             onDragStart={(event) => onDragStart(event, "output")}
@@ -205,6 +335,7 @@ const DnDFlow = () => {
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
+            onNodeClick={onNodeClick}
             edges={edges}
             onNodesChange={onNodesChange}
             onConnect={onConnect}
@@ -213,14 +344,14 @@ const DnDFlow = () => {
             onDragOver={onDragOver}
             onEdgeClick={onEdgeClick}
             onEdgesChange={onEdgesChange}
-            nodeTypes={nodeType}
-            fitViewOptions={{ padding: 6 }}
+            nodeTypes={nodeTypes}
+            fitViewOptions={{ padding: 4 }}
             fitView>
             <Controls />
           </ReactFlow>
         </div>
         <button className="button" onClick={saveWorkFlow}>
-          {isLoading ? "Saving..." : "Save"}
+          {getButtonLabel(isOnEditMode, isLoading, isUpdating)}
         </button>
       </div>
     </section>
